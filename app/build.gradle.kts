@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.test05"
+    namespace = "com.example.Ctrip"
     compileSdk = 36
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
-        applicationId = "com.example.test05"
+        applicationId = "com.example.Ctrip"
         minSdk = 33
         targetSdk = 33
         versionCode = 1

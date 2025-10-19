@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where android)",
+      "Bash(dir:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(./gradlew --stop)",
+      "Bash(mv:*)",
+      "Bash(./gradlew:*)",
+      "Bash(rm:*)",
+      "Bash(taskkill:*)",
+      "Bash(JAVA_HOME=\"D:/AndroidStudio/jbr\" ./gradlew build --no-daemon)"
+    ],
+    "deny": []
+  }
+}

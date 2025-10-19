@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "test05"
+rootProject.name = "Ctrip"
 include(":app")
