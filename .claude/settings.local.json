@@ -10,7 +10,27 @@
       "Bash(./gradlew:*)",
       "Bash(rm:*)",
       "Bash(taskkill:*)",
-      "Bash(JAVA_HOME=\"D:/AndroidStudio/jbr\" ./gradlew build --no-daemon)"
+      "Bash(JAVA_HOME=\"D:/AndroidStudio/jbr\" ./gradlew build --no-daemon)",
+      "Bash(.gradlew build)",
+      "Bash(gradlew.bat build:*)",
+      "Bash(java:*)",
+      "Bash(mkdir:*)",
+      "Bash(where java)",
+      "Bash(echo $JAVA_HOME)",
+      "Bash(.gradlew clean build)",
+      "Bash(.gradlew build --console=plain)",
+      "Bash(where javac)",
+      "Bash(set JAVA_HOME=D:JDK8)",
+      "Bash(cmd /c:*)",
+      "Bash(kotlinc:*)",
+      "Bash(grep:*)",
+      "Bash(.gradlew build --no-daemon)",
+      "Bash(gradlew clean:*)",
+      "Bash(git restore:*)",
+      "Bash(netsh:*)",
+      "Bash(.gradlew --stop)",
+      "Bash(gradlew.bat:*)",
+      "Bash(kotlin:*)"
     ],
     "deny": []
   }

@@ -104,13 +104,13 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
         )
     }
     
-    override fun getFilterTags(): List<FilterTag> {
+    override fun getFilterTags(): List<FlightFilterTag> {
         return listOf(
-            FilterTag("filter_main", "筛选了", hasDropdown = true),
-            FilterTag("filter_afternoon", "下午出发"),
-            FilterTag("filter_large_aircraft", "大机型"),
-            FilterTag("filter_free_baggage", "免费托运行李"),
-            FilterTag("filter_hide_shared", "隐藏共享")
+            FlightFilterTag("filter_main", "筛选了", hasDropdown = true),
+            FlightFilterTag("filter_afternoon", "下午出发"),
+            FlightFilterTag("filter_large_aircraft", "大机型"),
+            FlightFilterTag("filter_free_baggage", "免费托运行李"),
+            FlightFilterTag("filter_hide_shared", "隐藏共享")
         )
     }
     

@@ -8,7 +8,7 @@ data class FlightListData(
     val dateOptions: List<DateOption>,
     val promotionBanner: FlightListPromotionBanner,
     val membershipInfo: MembershipInfo,
-    val filterTags: List<FilterTag>,
+    val filterTags: List<FlightFilterTag>,
     val flightList: List<FlightItem>,
     val sortOptions: List<SortOption>,
     val selectedDateIndex: Int = 1 // Default to "明天"
@@ -47,7 +47,7 @@ data class MembershipInfo(
     val showArrow: Boolean = true
 )
 
-data class FilterTag(
+data class FlightFilterTag(
     val id: String,
     val text: String,         // "筛选了", "下午出发", "大机型", "免费托运行李", "隐藏共享"
     val isSelected: Boolean = false,
@@ -121,7 +121,7 @@ interface FlightListTabContract {
         fun getFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate): FlightListData?
         fun getDateOptions(baseDate: LocalDate): List<DateOption>
         fun getFlightList(departureCity: String, arrivalCity: String, date: LocalDate): List<FlightItem>
-        fun getFilterTags(): List<FilterTag>
+        fun getFilterTags(): List<FlightFilterTag>
         fun getSortOptions(): List<SortOption>
         fun applyFilters(flights: List<FlightItem>, activeFilters: List<String>): List<FlightItem>
         fun sortFlights(flights: List<FlightItem>, sortBy: String): List<FlightItem>

@@ -422,7 +422,7 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun FilterTagsSection(
-        filterTags: List<FilterTag>,
+        filterTags: List<FlightFilterTag>,
         onFilterClicked: (String) -> Unit
     ) {
         Card(
@@ -447,7 +447,7 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun FilterTagItem(
-        filterTag: FilterTag,
+        filterTag: FlightFilterTag,
         onClick: () -> Unit
     ) {
         Card(
