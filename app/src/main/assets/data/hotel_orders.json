@@ -1,0 +1,50 @@
+[
+  {
+    "orderId": "HO20241020001",
+    "city": "北京",
+    "hotelName": "北京王府井希尔顿酒店",
+    "checkInDate": "2024-11-15",
+    "checkOutDate": "2024-11-17",
+    "roomType": "豪华间",
+    "guestInfo": {
+      "name": "张三",
+      "idCard": "110101199001011234",
+      "phone": "13800138000"
+    },
+    "status": "CONFIRMED",
+    "totalPrice": 1360.0,
+    "createdAt": "2024-10-20"
+  },
+  {
+    "orderId": "HO20241020002",
+    "city": "上海",
+    "hotelName": "上海外滩茂悦大酒店",
+    "checkInDate": "2024-12-01",
+    "checkOutDate": "2024-12-03",
+    "roomType": "江景房",
+    "guestInfo": {
+      "name": "李四",
+      "idCard": "310101199002021234",
+      "phone": "13900139000"
+    },
+    "status": "PENDING",
+    "totalPrice": 2400.0,
+    "createdAt": "2024-10-20"
+  },
+  {
+    "orderId": "HO20241019001",
+    "city": "广州",
+    "hotelName": "广州白云宾馆",
+    "checkInDate": "2024-10-25",
+    "checkOutDate": "2024-10-26",
+    "roomType": "商务间",
+    "guestInfo": {
+      "name": "王五",
+      "idCard": "440101199003031234",
+      "phone": "13700137000"
+    },
+    "status": "COMPLETED",
+    "totalPrice": 450.0,
+    "createdAt": "2024-10-19"
+  }
+]

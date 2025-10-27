@@ -1,0 +1,11 @@
+# Gradle代理配置示例
+# 如果你知道代理地址，请取消注释并填入正确信息
+#systemProp.http.proxyHost=your-proxy-host
+#systemProp.http.proxyPort=8080
+#systemProp.https.proxyHost=your-proxy-host
+#systemProp.https.proxyPort=8080
+#systemProp.http.proxyUser=username
+#systemProp.http.proxyPassword=password
+
+# 如果不知道代理配置，请联系网络管理员
+# 或者直接使用Android Studio

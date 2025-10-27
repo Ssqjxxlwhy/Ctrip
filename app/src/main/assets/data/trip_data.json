@@ -1,0 +1,119 @@
+{
+  "hasTrips": false,
+  "routePlanning": {
+    "attractions": [
+      {
+        "id": "badaling",
+        "name": "八达岭长城",
+        "type": "attraction",
+        "icon": "🏔️",
+        "color": "#4CAF50",
+        "description": "世界文化遗产"
+      },
+      {
+        "id": "forbidden_city",
+        "name": "故宫博物院",
+        "type": "attraction",
+        "icon": "🏛️",
+        "color": "#4CAF50",
+        "description": "古老建筑，珍贵文物"
+      },
+      {
+        "id": "beijing_south",
+        "name": "北京南站",
+        "type": "station",
+        "icon": "🚄",
+        "color": "#2196F3",
+        "description": "交通枢纽"
+      },
+      {
+        "id": "universal_studios",
+        "name": "环球影城",
+        "type": "attraction",
+        "icon": "🎢",
+        "color": "#00BCD4",
+        "description": "主题乐园"
+      },
+      {
+        "id": "hotel",
+        "name": "酒店",
+        "type": "hotel",
+        "icon": "🏨",
+        "color": "#FF5722",
+        "description": "住宿服务"
+      }
+    ],
+    "planningButtonText": "开始规划",
+    "supportText": "支持智能推荐线路"
+  },
+  "travelMap": {
+    "title": "旅游地图",
+    "subtitle": "发现你的旅行灵感",
+    "icon": "🗺️"
+  },
+  "cityRecommendations": [
+    {
+      "id": "chengdu",
+      "cityName": "成都",
+      "moreText": "攻略",
+      "contents": [
+        {
+          "id": "chengdu_guide",
+          "type": "guide",
+          "title": "成都住宿指南",
+          "subtitle": "成都住宿看这一篇就够！",
+          "tag": "当地指南",
+          "description": "详细的成都住宿攻略"
+        },
+        {
+          "id": "chengdu_note",
+          "type": "note",
+          "title": "去了都江堰6次，我的建议是...别再跑...",
+          "subtitle": "苏苏的旅游日记",
+          "tag": "笔记",
+          "author": "苏苏的旅游日记",
+          "description": "都江堰旅游心得"
+        },
+        {
+          "id": "chengdu_planning",
+          "type": "planning",
+          "title": "5个游玩点",
+          "subtitle": "巧峨2日游: 的清幽, 小众",
+          "tag": "线路规划",
+          "description": "成都周边游规划"
+        }
+      ]
+    },
+    {
+      "id": "beijing",
+      "cityName": "北京",
+      "moreText": "攻略",
+      "contents": [
+        {
+          "id": "beijing_guide",
+          "type": "guide",
+          "title": "北京住宿攻略指南",
+          "subtitle": "北京住宿完整攻略",
+          "tag": "当地指南",
+          "description": "北京住宿推荐"
+        },
+        {
+          "id": "beijing_note",
+          "type": "note",
+          "title": "北京最牛的地方",
+          "subtitle": "发现北京的魅力",
+          "tag": "笔记",
+          "description": "北京旅游体验"
+        },
+        {
+          "id": "beijing_planning",
+          "type": "planning",
+          "title": "北京3日游",
+          "subtitle": "经典路线推荐",
+          "tag": "线路规划",
+          "description": "北京旅游规划"
+        }
+      ]
+    }
+  ]
+}

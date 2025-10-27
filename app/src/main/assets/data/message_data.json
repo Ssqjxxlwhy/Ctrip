@@ -1,0 +1,68 @@
+{
+  "messageActions": [
+    {
+      "id": "order_travel",
+      "title": "订单出行",
+      "icon": "📋",
+      "color": "#4A90E2",
+      "hasUnread": false,
+      "unreadCount": 0
+    },
+    {
+      "id": "interactive_message",
+      "title": "互动消息",
+      "icon": "💬",
+      "color": "#FF8C00",
+      "hasUnread": true,
+      "unreadCount": 1
+    },
+    {
+      "id": "account_notification",
+      "title": "账户通知",
+      "icon": "🔔",
+      "color": "#FF6B47",
+      "hasUnread": false,
+      "unreadCount": 0
+    },
+    {
+      "id": "member_service",
+      "title": "会员服务",
+      "icon": "💎",
+      "color": "#B8860B",
+      "hasUnread": false,
+      "unreadCount": 0
+    }
+  ],
+  "systemMessages": [
+    {
+      "id": "benefits_activation",
+      "title": "您的权益待激活",
+      "content": "您有安心退改权益未使用，快去看看！",
+      "icon": "💰",
+      "color": "#FF8C00",
+      "isNew": false
+    }
+  ],
+  "conversationMessages": [
+    {
+      "id": "activity_promotion",
+      "title": "活动优惠",
+      "content": "深航出境闪促200元起",
+      "time": "15:27",
+      "avatar": "🎯",
+      "hasUnread": true,
+      "unreadCount": 1,
+      "tags": []
+    },
+    {
+      "id": "message_updates",
+      "title": "消息号动态",
+      "content": "[57条]旅游指南针：山西定制游专场咨询立减！",
+      "time": "15:22",
+      "avatar": "⭐",
+      "hasUnread": true,
+      "unreadCount": 1,
+      "tags": ["发现新优惠"]
+    }
+  ]
+}

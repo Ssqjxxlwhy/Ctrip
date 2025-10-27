@@ -1,0 +1,68 @@
+[
+  {
+    "orderId": "TO20241020001",
+    "trainInfo": {
+      "trainNumber": "G1",
+      "trainType": "高速动车",
+      "departureStation": "北京南站",
+      "arrivalStation": "上海虹桥站",
+      "departureTime": "2024-11-15T07:00:00",
+      "arrivalTime": "2024-11-15T11:30:00"
+    },
+    "seatType": "SECOND_CLASS",
+    "seatNumber": "02车06A",
+    "passengerInfo": {
+      "name": "张三",
+      "idCard": "110101199001011234",
+      "phone": "13800138000"
+    },
+    "travelDate": "2024-11-15",
+    "status": "CONFIRMED",
+    "price": 553.0,
+    "bookingDate": "2024-10-20"
+  },
+  {
+    "orderId": "TO20241020002",
+    "trainInfo": {
+      "trainNumber": "G6107",
+      "trainType": "高速动车",
+      "departureStation": "上海虹桥站",
+      "arrivalStation": "广州南站",
+      "departureTime": "2024-11-16T13:15:00",
+      "arrivalTime": "2024-11-16T20:45:00"
+    },
+    "seatType": "FIRST_CLASS",
+    "seatNumber": "01车01A",
+    "passengerInfo": {
+      "name": "李四",
+      "idCard": "310101199002021234",
+      "phone": "13900139000"
+    },
+    "travelDate": "2024-11-16",
+    "status": "PENDING",
+    "price": 1213.0,
+    "bookingDate": "2024-10-20"
+  },
+  {
+    "orderId": "TO20241019001",
+    "trainInfo": {
+      "trainNumber": "D2281",
+      "trainType": "动车",
+      "departureStation": "广州南站",
+      "arrivalStation": "深圳北站",
+      "departureTime": "2024-10-25T09:20:00",
+      "arrivalTime": "2024-10-25T10:15:00"
+    },
+    "seatType": "SECOND_CLASS",
+    "seatNumber": "05车12B",
+    "passengerInfo": {
+      "name": "王五",
+      "idCard": "440101199003031234",
+      "phone": "13700137000"
+    },
+    "travelDate": "2024-10-25",
+    "status": "COMPLETED",
+    "price": 62.0,
+    "bookingDate": "2024-10-19"
+  }
+]

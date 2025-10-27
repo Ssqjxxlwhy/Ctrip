@@ -1,0 +1,62 @@
+[
+  {
+    "flightId": "flight_001",
+    "flightInfo": {
+      "flightNumber": "CA1234",
+      "airline": "中国国际航空",
+      "departureAirport": "北京首都国际机场",
+      "arrivalAirport": "上海浦东国际机场",
+      "departureTime": "2024-11-15T08:30:00",
+      "arrivalTime": "2024-11-15T11:00:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 680.0,
+    "discount": 0.85,
+    "availableSeats": 45
+  },
+  {
+    "flightId": "flight_002",
+    "flightInfo": {
+      "flightNumber": "MU5678",
+      "airline": "中国东方航空",
+      "departureAirport": "上海虹桥国际机场",
+      "arrivalAirport": "广州白云国际机场",
+      "departureTime": "2024-11-16T14:20:00",
+      "arrivalTime": "2024-11-16T17:10:00"
+    },
+    "cabinClass": "BUSINESS",
+    "price": 1580.0,
+    "discount": 0.90,
+    "availableSeats": 12
+  },
+  {
+    "flightId": "flight_003",
+    "flightInfo": {
+      "flightNumber": "CZ9012",
+      "airline": "中国南方航空",
+      "departureAirport": "广州白云国际机场", 
+      "arrivalAirport": "深圳宝安国际机场",
+      "departureTime": "2024-11-17T10:15:00",
+      "arrivalTime": "2024-11-17T11:30:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 320.0,
+    "discount": 0.75,
+    "availableSeats": 28
+  },
+  {
+    "flightId": "flight_004",
+    "flightInfo": {
+      "flightNumber": "3U8888",
+      "airline": "四川航空",
+      "departureAirport": "成都双流国际机场",
+      "arrivalAirport": "杭州萧山国际机场",
+      "departureTime": "2024-11-18T09:45:00",
+      "arrivalTime": "2024-11-18T12:30:00"
+    },
+    "cabinClass": "PREMIUM_ECONOMY",
+    "price": 890.0,
+    "discount": 0.80,
+    "availableSeats": 18
+  }
+]

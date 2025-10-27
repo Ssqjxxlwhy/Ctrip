@@ -1,0 +1,88 @@
+[
+  {
+    "trainId": "train_001",
+    "trainInfo": {
+      "trainNumber": "G1",
+      "trainType": "高速动车",
+      "departureStation": "北京南站",
+      "arrivalStation": "上海虹桥站",
+      "departureTime": "2024-11-15T07:00:00",
+      "arrivalTime": "2024-11-15T11:30:00"
+    },
+    "availableSeats": {
+      "BUSINESS_CLASS": 8,
+      "FIRST_CLASS": 28,
+      "SECOND_CLASS": 156
+    },
+    "prices": {
+      "BUSINESS_CLASS": 1748.0,
+      "FIRST_CLASS": 933.0,
+      "SECOND_CLASS": 553.0
+    },
+    "duration": "4小时30分"
+  },
+  {
+    "trainId": "train_002", 
+    "trainInfo": {
+      "trainNumber": "G6107",
+      "trainType": "高速动车",
+      "departureStation": "上海虹桥站",
+      "arrivalStation": "广州南站",
+      "departureTime": "2024-11-16T13:15:00",
+      "arrivalTime": "2024-11-16T20:45:00"
+    },
+    "availableSeats": {
+      "BUSINESS_CLASS": 5,
+      "FIRST_CLASS": 35,
+      "SECOND_CLASS": 200
+    },
+    "prices": {
+      "BUSINESS_CLASS": 2330.0,
+      "FIRST_CLASS": 1213.0,
+      "SECOND_CLASS": 720.0
+    },
+    "duration": "7小时30分"
+  },
+  {
+    "trainId": "train_003",
+    "trainInfo": {
+      "trainNumber": "D2281",
+      "trainType": "动车",
+      "departureStation": "广州南站",
+      "arrivalStation": "深圳北站", 
+      "departureTime": "2024-11-17T09:20:00",
+      "arrivalTime": "2024-11-17T10:15:00"
+    },
+    "availableSeats": {
+      "FIRST_CLASS": 18,
+      "SECOND_CLASS": 78
+    },
+    "prices": {
+      "FIRST_CLASS": 99.5,
+      "SECOND_CLASS": 62.0
+    },
+    "duration": "55分钟"
+  },
+  {
+    "trainId": "train_004",
+    "trainInfo": {
+      "trainNumber": "K1234",
+      "trainType": "快速",
+      "departureStation": "成都站",
+      "arrivalStation": "杭州站",
+      "departureTime": "2024-11-18T18:30:00",
+      "arrivalTime": "2024-11-20T08:45:00"
+    },
+    "availableSeats": {
+      "HARD_SLEEPER": 25,
+      "SOFT_SLEEPER": 12,
+      "HARD_SEAT": 80
+    },
+    "prices": {
+      "SOFT_SLEEPER": 658.0,
+      "HARD_SLEEPER": 425.0,
+      "HARD_SEAT": 245.0
+    },
+    "duration": "38小时15分"
+  }
+]

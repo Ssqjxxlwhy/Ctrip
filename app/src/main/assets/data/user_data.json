@@ -1,0 +1,205 @@
+{
+  "userProfile": {
+    "avatar": "👤",
+    "displayName": "尊敬的会员",
+    "memberTitle": "主页",
+    "followers": 0,
+    "following": 0,
+    "likes": 0,
+    "praised": 0
+  },
+  "membershipInfo": {
+    "level": "普通会员",
+    "levelIcon": "💎",
+    "benefits": [
+      {
+        "id": "points_cashback",
+        "title": "积分获现",
+        "subtitle": "100抵1元",
+        "icon": "🔵",
+        "color": "#4A90E2"
+      },
+      {
+        "id": "airport_dining",
+        "title": "机场餐饮",
+        "subtitle": "最高8折优惠",
+        "icon": "✈️",
+        "color": "#87CEEB"
+      },
+      {
+        "id": "restaurant_privilege",
+        "title": "味餐厅礼遇",
+        "subtitle": "黑钻品鉴会",
+        "icon": "🍽️",
+        "color": "#4A90E2"
+      }
+    ]
+  },
+  "statistics": {
+    "favorites": 0,
+    "browsingHistory": 9,
+    "points": 0,
+    "coupons": 1
+  },
+  "menuItems": [
+    {
+      "id": "pending_payment",
+      "title": "待付款",
+      "icon": "💼",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "pending_trip",
+      "title": "待出行",
+      "icon": "🎭",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "refund_after_sale",
+      "title": "退款/售后",
+      "icon": "💱",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "pending_review",
+      "title": "待点评",
+      "icon": "💬",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "all_orders",
+      "title": "全部订单",
+      "icon": "📋",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "common_info",
+      "title": "常用信息",
+      "icon": "📄",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "expense_receipt",
+      "title": "报销凭证",
+      "icon": "💴",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "gift_card",
+      "title": "礼品卡",
+      "icon": "🎁",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "travel_list",
+      "title": "出行清单",
+      "icon": "📝",
+      "count": 0,
+      "hasNotification": false
+    },
+    {
+      "id": "special_shopping",
+      "title": "特价购物车",
+      "icon": "🛒",
+      "count": 0,
+      "hasNotification": false
+    }
+  ],
+  "wallet": {
+    "title": "我的钱包",
+    "subtitle": "去实名",
+    "walletItems": [
+      {
+        "id": "business_loan",
+        "name": "生意人贷",
+        "amount": "50万",
+        "description": "最高可借",
+        "hasPromotion": false,
+        "promotionText": ""
+      },
+      {
+        "id": "instant_loan",
+        "name": "拿去花",
+        "amount": "10万",
+        "description": "最高额度",
+        "hasPromotion": true,
+        "promotionText": "去看看"
+      },
+      {
+        "id": "credit_loan",
+        "name": "信用贷",
+        "amount": "30万",
+        "description": "最高可借",
+        "hasPromotion": false,
+        "promotionText": ""
+      },
+      {
+        "id": "co_brand_card",
+        "name": "联名卡",
+        "amount": "10万",
+        "description": "最高额度",
+        "hasPromotion": false,
+        "promotionText": ""
+      }
+    ]
+  },
+  "promotions": [
+    {
+      "id": "travel_footprint",
+      "title": "旅行足迹",
+      "subtitle": "用脚步丈量世界",
+      "backgroundColor": "#E0F7FA"
+    },
+    {
+      "id": "friend_family_card",
+      "title": "老友亲情卡",
+      "subtitle": "帮长辈解锁福利",
+      "backgroundColor": "#E8EAF6"
+    },
+    {
+      "id": "partnership",
+      "title": "加盟合作",
+      "subtitle": "诚邀共创双赢",
+      "backgroundColor": "#E0F2F1"
+    }
+  ],
+  "myPublish": {
+    "title": "我的发布",
+    "moreText": "携程社区",
+    "items": [
+      {
+        "id": "reward_task",
+        "title": "有奖任务",
+        "icon": "🎁",
+        "color": "#FF69B4"
+      },
+      {
+        "id": "newbie_benefits",
+        "title": "新手福利",
+        "icon": "🌟",
+        "color": "#FFA500"
+      },
+      {
+        "id": "creator_center",
+        "title": "创作中心",
+        "icon": "✏️",
+        "color": "#9370DB"
+      }
+    ]
+  },
+  "bottomPromotion": {
+    "id": "theme_park_promotion",
+    "title": "#解锁乐园闭园式新旅行",
+    "subtitle": "精选话题，助你上热门",
+    "buttonText": "立即参与",
+    "imageUrl": ""
+  }
+}

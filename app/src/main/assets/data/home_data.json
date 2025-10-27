@@ -1,0 +1,145 @@
+{
+  "userInfo": {
+    "memberLevel": "普通会员",
+    "points": 1580
+  },
+  "mainActions": [
+    {
+      "id": "hotel",
+      "title": "酒店",
+      "icon": "🏨",
+      "color": "#FF5722"
+    },
+    {
+      "id": "guide_attraction",
+      "title": "攻略/景点",
+      "icon": "📖",
+      "color": "#FF9800"
+    },
+    {
+      "id": "flight",
+      "title": "机票",
+      "icon": "✈️",
+      "color": "#2196F3"
+    },
+    {
+      "id": "train",
+      "title": "火车票",
+      "icon": "🚄",
+      "color": "#9C27B0"
+    },
+    {
+      "id": "travel_group",
+      "title": "旅游/跟团",
+      "icon": "🌴",
+      "color": "#4CAF50"
+    }
+  ],
+  "secondaryActions": [
+    {
+      "id": "homestay",
+      "title": "民宿/客栈",
+      "icon": "🏠",
+      "color": "#E91E63"
+    },
+    {
+      "id": "tickets",
+      "title": "门票/乐园",
+      "icon": "🎫",
+      "color": "#FF9800"
+    },
+    {
+      "id": "transfer",
+      "title": "接送机/包车",
+      "icon": "🚗",
+      "color": "#00BCD4"
+    },
+    {
+      "id": "car_rental",
+      "title": "租车自驾",
+      "icon": "🚙",
+      "color": "#673AB7"
+    },
+    {
+      "id": "private_tour",
+      "title": "私家团/定制",
+      "icon": "💎",
+      "color": "#009688"
+    }
+  ],
+  "searchSuggestions": [
+    {
+      "text": "北京",
+      "type": "city"
+    },
+    {
+      "text": "北京机票",
+      "type": "flight"
+    },
+    {
+      "text": "北京火车票",
+      "type": "train"
+    },
+    {
+      "text": "上海机票",
+      "type": "flight"
+    },
+    {
+      "text": "北京酒店",
+      "type": "hotel"
+    }
+  ],
+  "contentSections": [
+    {
+      "id": "special_live",
+      "title": "特价/直播",
+      "icon": "📺"
+    },
+    {
+      "id": "shows_exhibitions",
+      "title": "演出/展览",
+      "icon": "🎭"
+    },
+    {
+      "id": "route_planning",
+      "title": "线路规划",
+      "icon": "🗺️"
+    },
+    {
+      "id": "travel_hotspots",
+      "title": "旅行热点",
+      "icon": "🔥"
+    },
+    {
+      "id": "ctrip_rankings",
+      "title": "携程榜单",
+      "icon": "🏆"
+    }
+  ],
+  "promotionBanners": [
+    {
+      "id": "double11",
+      "title": "11.11旅行狂欢节",
+      "subtitle": "天天有好价",
+      "price": "¥1111",
+      "imageUrl": "promotion_1111.jpg",
+      "backgroundColor": "#FF4500"
+    },
+    {
+      "id": "flight_deals",
+      "title": "超值特价机票",
+      "subtitle": "限时抢购",
+      "price": "3折起",
+      "imageUrl": "flight_deals.jpg",
+      "backgroundColor": "#1E90FF"
+    },
+    {
+      "id": "hotel_discount",
+      "title": "酒店4折起",
+      "subtitle": "品质住宿",
+      "price": "低至4折",
+      "imageUrl": "hotel_discount.jpg",
+      "backgroundColor": "#32CD32"
+    }
+  ]
+}
