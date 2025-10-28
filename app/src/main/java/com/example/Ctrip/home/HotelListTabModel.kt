@@ -557,12 +557,12 @@ class HotelListTabModelImpl(private val context: Context) : HotelListTabModel {
             .apply()
     }
     
-    private fun getSortOptions(): List<SortOption> {
+    private fun getSortOptions(): List<HotelSortOption> {
         return listOf(
-            SortOption("welcome", "欢迎度排序", true),
-            SortOption("distance", "位置距离", false),
-            SortOption("price", "价格/星级", false),
-            SortOption("filter", "筛选", false, false)
+            HotelSortOption("welcome", "欢迎度排序", true),
+            HotelSortOption("distance", "位置距离", false),
+            HotelSortOption("price", "价格/星级", false),
+            HotelSortOption("filter", "筛选", false, false)
         )
     }
     

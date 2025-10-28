@@ -168,58 +168,8 @@ fun HomeTabScreen(
             }
         }
     } else if (showFlightBooking) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Back button - Fixed header
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = ComposeColor.White,
-                shadowElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable { 
-                                println("返回按钮被点击了")  // 调试日志
-                                onFlightBookingChanged(false) 
-                            }
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowBack, 
-                            contentDescription = "返回",
-                            tint = ComposeColor(0xFF4A90E2),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "返回",
-                            color = ComposeColor(0xFF4A90E2),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "机票预订",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-            
-            // Flight booking content
-            Box(modifier = Modifier.weight(1f)) {
-                FlightBookingTabScreen()
-            }
-        }
+        // Flight booking content - 直接全屏显示，不包含额外的顶部栏
+        FlightBookingTabScreen()
     } else if (showTrainBooking) {
         Column(
             modifier = Modifier.fillMaxSize()

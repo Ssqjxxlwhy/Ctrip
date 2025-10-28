@@ -29,8 +29,12 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     private lateinit var presenter: FlightListTabContract.Presenter
     private var flightListData by mutableStateOf<FlightListData?>(null)
     private var isLoading by mutableStateOf(false)
+    private var departureCity by mutableStateOf("")
+    private var arrivalCity by mutableStateOf("")
     
     fun initialize(departureCity: String, arrivalCity: String, selectedDate: LocalDate) {
+        this.departureCity = departureCity
+        this.arrivalCity = arrivalCity
         val model = FlightListTabModel(context)
         presenter = FlightListTabPresenter(model)
         presenter.attachView(this)
@@ -51,19 +55,12 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                // 顶部行程信息栏
-                flightListData?.let { data ->
-                    TopRouteInfoSection(
-                        routeInfo = data.routeInfo,
-                        onBack = {
-                            presenter.onBackClicked()
-                            onBack()
-                        },
-                        onLowPriceAlert = { presenter.onLowPriceAlertClicked() },
-                        onMore = { presenter.onMoreOptionsClicked() },
-                        onCalendar = { presenter.onCalendarClicked() }
-                    )
-                }
+                // 顶部标题栏
+                TopBarSection(
+                    departureCity = departureCity,
+                    arrivalCity = arrivalCity,
+                    onBack = onBack
+                )
                 
                 // 主要内容区域
                 Box(modifier = Modifier.weight(1f)) {
@@ -145,13 +142,12 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
         }
     }
     
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun TopRouteInfoSection(
-        routeInfo: RouteInfo,
-        onBack: () -> Unit,
-        onLowPriceAlert: () -> Unit,
-        onMore: () -> Unit,
-        onCalendar: () -> Unit
+    private fun TopBarSection(
+        departureCity: String,
+        arrivalCity: String,
+        onBack: () -> Unit
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -162,68 +158,48 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 左侧返回箭头
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "返回",
-                    modifier = Modifier
-                        .clickable { onBack() }
-                        .size(24.dp),
-                    tint = Color(0xFF333333)
-                )
-                
-                // 中间路线信息
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.Center
+                // 返回按钮
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier.size(24.dp)
                 ) {
-                    Text(
-                        text = "${routeInfo.departureCity} → ${routeInfo.arrivalCity}",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF333333)
-                    )
                     Icon(
-                        Icons.Default.KeyboardArrowDown,
-                        contentDescription = "展开",
+                        Icons.Default.ArrowBack,
+                        contentDescription = "返回",
                         modifier = Modifier.size(20.dp),
-                        tint = Color(0xFF666666)
+                        tint = Color(0xFF333333)
                     )
                 }
                 
-                // 右侧操作按钮
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                // 标题
+                Text(
+                    text = "$departureCity — $arrivalCity",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // 右侧更多按钮和低价提醒
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 低价提醒
-                    Text(
-                        text = "低价提醒",
-                        fontSize = 14.sp,
-                        color = Color(0xFF007AFF),
-                        modifier = Modifier.clickable { onLowPriceAlert() }
-                    )
-                    
-                    // 更多
-                    Text(
-                        text = "更多",
-                        fontSize = 14.sp,
-                        color = Color(0xFF333333),
-                        modifier = Modifier.clickable { onMore() }
-                    )
-                    
-                    // 日历图标
                     Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = "日历",
-                        modifier = Modifier
-                            .clickable { onCalendar() }
-                            .size(20.dp),
-                        tint = Color(0xFF333333)
+                        Icons.Default.Notifications,
+                        contentDescription = "低价提醒",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color(0xFF666666)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = "更多",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color(0xFF666666)
                     )
                 }
             }

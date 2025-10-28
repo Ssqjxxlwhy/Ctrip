@@ -38,6 +38,14 @@ fun FlightBookingTabScreen() {
     var showDestinationSelect by remember { mutableStateOf(false) }
     var showFlightDateSelect by remember { mutableStateOf(false) }
     var showFlightList by remember { mutableStateOf(false) }
+    var showCabinTypeSelect by remember { mutableStateOf(false) }
+    var showOrderForm by remember { mutableStateOf(false) }
+    var showServiceSelect by remember { mutableStateOf(false) }
+    var showPaymentSuccess by remember { mutableStateOf(false) }
+    var selectedFlightId by remember { mutableStateOf<String?>(null) }
+    var selectedTicketOptionId by remember { mutableStateOf<String?>(null) }
+    var currentOrderFormData by remember { mutableStateOf<OrderFormData?>(null) }
+    var currentServiceData by remember { mutableStateOf<ServiceSelectData?>(null) }
     var selectedDepartureCity by remember { mutableStateOf<com.example.Ctrip.model.City?>(null) }
     var selectedDestinationCity by remember { mutableStateOf<com.example.Ctrip.model.City?>(null) }
     var selectedFlightDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -100,140 +108,225 @@ fun FlightBookingTabScreen() {
         }
     }
     
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFF5F5F5)),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
-                PromotionBannerSection(flightData?.promotionBanner)
-            }
-            
-            item {
-                TransportTabsSection(flightData?.transportTabs, presenter)
-            }
-            
-            item {
-                TripTypeTabsSection(flightData?.tripTypeTabs, presenter)
-            }
-            
-            item {
-                FlightSearchSection(flightData?.searchParams, flightData?.cabinTypes, selectedDepartureCity, selectedDestinationCity, selectedFlightDate, presenter)
-            }
-            
-            item {
-                SearchButtonSection(presenter)
-            }
-            
-            item {
-                ServiceProviderSection()
-            }
-            
-            item {
-                ServiceFeaturesSection(flightData?.serviceFeatures, presenter)
-            }
-            
-            item {
-                MembershipSectionsRow(flightData?.membershipSections, presenter)
-            }
-            
-            item {
-                InspirationSection(flightData?.inspirationSections, presenter)
-            }
-            
-            item {
-                BottomFeaturesSection(flightData?.bottomFeatures, presenter)
-            }
+    if (showFlightList) {
+        // Flight List Screen - 完全替换机票预订页面
+        val flightListView = remember { FlightListTabView(context) }
+        LaunchedEffect(Unit) {
+            val departureCity = selectedDepartureCity?.cityName ?: "上海"
+            val arrivalCity = selectedDestinationCity?.cityName ?: "北京"
+            val searchDate = selectedFlightDate ?: LocalDate.now().plusDays(1)
+            flightListView.initialize(departureCity, arrivalCity, searchDate)
         }
-        
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+        flightListView.FlightListTabScreen(
+            onFlightSelected = { flightId ->
+                selectedFlightId = flightId
+                showCabinTypeSelect = true
+                showFlightList = false
+            },
+            onBack = {
+                showFlightList = false
+            }
+        )
+    } else {
+        // Flight Booking Screen - 机票预订页面
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFF5F5F5)),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CircularProgressIndicator()
-            }
-        }
-        
-        // Departure City Selection Screen
-        if (showDepartureSelect) {
-            val departureView = remember { DepartureSelectTabView(context) }
-            LaunchedEffect(Unit) {
-                departureView.initialize()
-            }
-            departureView.DepartureSelectTabScreen(
-                onCitySelected = { city ->
-                    selectedDepartureCity = city
-                    // 通知presenter更新出发地城市
-                    presenter.updateDepartureCity(city.cityName)
-                    Toast.makeText(context, "选择出发地: ${city.cityName}", Toast.LENGTH_SHORT).show()
-                    showDepartureSelect = false
-                },
-                onClose = {
-                    showDepartureSelect = false
+                item {
+                    PromotionBannerSection(flightData?.promotionBanner)
                 }
-            )
-        }
-        
-        // Destination City Selection Screen
-        if (showDestinationSelect) {
-            val destinationView = remember { DestinationSelectTabView(context) }
-            LaunchedEffect(Unit) {
-                destinationView.initialize()
-            }
-            destinationView.DestinationSelectTabScreen(
-                onDestinationSelected = { city ->
-                    selectedDestinationCity = city
-                    // 通知presenter更新目的地城市
-                    presenter.updateDestinationCity(city.cityName)
-                    Toast.makeText(context, "选择目的地: ${city.cityName}", Toast.LENGTH_SHORT).show()
-                    showDestinationSelect = false
-                },
-                onClose = {
-                    showDestinationSelect = false
+                
+                item {
+                    TransportTabsSection(flightData?.transportTabs, presenter)
                 }
-            )
-        }
-        
-        // Flight Date Selection Screen
-        if (showFlightDateSelect) {
-            val flightDateView = remember { FlightDateSelectTabView(context) }
-            LaunchedEffect(Unit) {
-                flightDateView.initialize()
-            }
-            flightDateView.FlightDateSelectTabScreen(
-                onDateSelected = { date ->
-                    selectedFlightDate = date
-                    Toast.makeText(context, "选择出发日期: ${date.format(DateTimeFormatter.ofPattern("M月d日"))}", Toast.LENGTH_SHORT).show()
-                    showFlightDateSelect = false
-                },
-                onClose = {
-                    showFlightDateSelect = false
+                
+                item {
+                    TripTypeTabsSection(flightData?.tripTypeTabs, presenter)
                 }
-            )
-        }
-        
-        // Flight List Screen
-        if (showFlightList) {
-            val flightListView = remember { FlightListTabView(context) }
-            LaunchedEffect(Unit) {
-                val departureCity = selectedDepartureCity?.cityName ?: "上海"
-                val arrivalCity = selectedDestinationCity?.cityName ?: "北京"
-                val searchDate = selectedFlightDate ?: LocalDate.now().plusDays(1)
-                flightListView.initialize(departureCity, arrivalCity, searchDate)
-            }
-            flightListView.FlightListTabScreen(
-                onFlightSelected = { flightId ->
-                    Toast.makeText(context, "选择航班: $flightId", Toast.LENGTH_SHORT).show()
-                    // Here you could navigate to flight detail or booking confirmation
-                },
-                onBack = {
-                    showFlightList = false
+                
+                item {
+                    FlightSearchSection(flightData?.searchParams, flightData?.cabinTypes, selectedDepartureCity, selectedDestinationCity, selectedFlightDate, presenter)
                 }
-            )
+                
+                item {
+                    SearchButtonSection(presenter)
+                }
+                
+                item {
+                    ServiceProviderSection()
+                }
+                
+                item {
+                    ServiceFeaturesSection(flightData?.serviceFeatures, presenter)
+                }
+                
+                item {
+                    MembershipSectionsRow(flightData?.membershipSections, presenter)
+                }
+                
+                item {
+                    InspirationSection(flightData?.inspirationSections, presenter)
+                }
+                
+                item {
+                    BottomFeaturesSection(flightData?.bottomFeatures, presenter)
+                }
+            }
+            
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            
+            // Departure City Selection Screen
+            if (showDepartureSelect) {
+                val departureView = remember { DepartureSelectTabView(context) }
+                LaunchedEffect(Unit) {
+                    departureView.initialize()
+                }
+                departureView.DepartureSelectTabScreen(
+                    onCitySelected = { city ->
+                        selectedDepartureCity = city
+                        // 通知presenter更新出发地城市
+                        presenter.updateDepartureCity(city.cityName)
+                        Toast.makeText(context, "选择出发地: ${city.cityName}", Toast.LENGTH_SHORT).show()
+                        showDepartureSelect = false
+                    },
+                    onClose = {
+                        showDepartureSelect = false
+                    }
+                )
+            }
+            
+            // Destination City Selection Screen
+            if (showDestinationSelect) {
+                val destinationView = remember { DestinationSelectTabView(context) }
+                LaunchedEffect(Unit) {
+                    destinationView.initialize()
+                }
+                destinationView.DestinationSelectTabScreen(
+                    onDestinationSelected = { city ->
+                        selectedDestinationCity = city
+                        // 通知presenter更新目的地城市
+                        presenter.updateDestinationCity(city.cityName)
+                        Toast.makeText(context, "选择目的地: ${city.cityName}", Toast.LENGTH_SHORT).show()
+                        showDestinationSelect = false
+                    },
+                    onClose = {
+                        showDestinationSelect = false
+                    }
+                )
+            }
+            
+            // Flight Date Selection Screen
+            if (showFlightDateSelect) {
+                val flightDateView = remember { FlightDateSelectTabView(context) }
+                LaunchedEffect(Unit) {
+                    flightDateView.initialize()
+                }
+                flightDateView.FlightDateSelectTabScreen(
+                    onDateSelected = { date ->
+                        selectedFlightDate = date
+                        Toast.makeText(context, "选择出发日期: ${date.format(DateTimeFormatter.ofPattern("M月d日"))}", Toast.LENGTH_SHORT).show()
+                        showFlightDateSelect = false
+                    },
+                    onClose = {
+                        showFlightDateSelect = false
+                    }
+                )
+            }
         }
+    }
+    
+    if (showCabinTypeSelect && selectedFlightId != null) {
+        // Cabin Type Selection Screen
+        val cabinTypeSelectView = remember { CabinTypeSelectTabView(context) }
+        LaunchedEffect(selectedFlightId) {
+            cabinTypeSelectView.initialize(selectedFlightId!!)
+        }
+        cabinTypeSelectView.CabinTypeSelectTabScreen(
+            onNavigateToOrderForm = { ticketOptionId ->
+                selectedTicketOptionId = ticketOptionId
+                showCabinTypeSelect = false
+                showOrderForm = true
+            },
+            onBack = {
+                showCabinTypeSelect = false
+                showFlightList = true
+            }
+        )
+    }
+    
+    if (showOrderForm && selectedTicketOptionId != null) {
+        // Order Form Screen
+        val orderFormView = remember { OrderFormTabView(context) }
+        LaunchedEffect(selectedTicketOptionId) {
+            orderFormView.initialize(selectedTicketOptionId!!)
+        }
+        orderFormView.OrderFormTabScreen(
+            onNavigateToServiceSelect = { orderData ->
+                currentOrderFormData = orderData
+                showOrderForm = false
+                showServiceSelect = true
+            },
+            onBack = {
+                showOrderForm = false
+                showCabinTypeSelect = true
+            }
+        )
+    }
+
+    if (showServiceSelect && currentOrderFormData != null) {
+        // Service Select Screen
+        val serviceSelectView = remember { ServiceSelectTabView(context) }
+        LaunchedEffect(currentOrderFormData) {
+            serviceSelectView.initialize(currentOrderFormData!!)
+        }
+        serviceSelectView.ServiceSelectTabScreen(
+            onNavigateToPayment = { serviceData ->
+                currentServiceData = serviceData
+                showServiceSelect = false
+                showPaymentSuccess = true
+            },
+            onBack = {
+                showServiceSelect = false
+                showOrderForm = true
+            }
+        )
+    }
+
+    if (showPaymentSuccess && currentServiceData != null) {
+        // Payment Success Screen
+        val paymentSuccessView = remember { PaymentSuccessTabView(context) }
+        LaunchedEffect(currentServiceData) {
+            paymentSuccessView.initialize(currentServiceData!!)
+        }
+        paymentSuccessView.PaymentSuccessTabScreen(
+            onNavigateToOrderList = {
+                Toast.makeText(context, "导航到订单列表页面", Toast.LENGTH_SHORT).show()
+            },
+            onNavigateToHome = {
+                // 返回首页，重置所有状态
+                showPaymentSuccess = false
+                showServiceSelect = false
+                showOrderForm = false
+                showCabinTypeSelect = false
+                showFlightList = false
+            },
+            onBack = {
+                // 返回到服务选择页面
+                showPaymentSuccess = false
+                showServiceSelect = true
+            }
+        )
     }
 }
 

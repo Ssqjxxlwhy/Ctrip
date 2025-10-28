@@ -4,10 +4,10 @@
     "flightInfo": {
       "flightNumber": "CA1234",
       "airline": "中国国际航空",
-      "departureAirport": "北京首都国际机场",
-      "arrivalAirport": "上海浦东国际机场",
-      "departureTime": "2024-11-15T08:30:00",
-      "arrivalTime": "2024-11-15T11:00:00"
+      "departureAirport": "上海浦东国际机场",
+      "arrivalAirport": "北京首都国际机场",
+      "departureTime": "2025-10-20T08:30:00",
+      "arrivalTime": "2025-10-20T11:00:00"
     },
     "cabinClass": "ECONOMY",
     "price": 680.0,
@@ -17,46 +17,166 @@
   {
     "flightId": "flight_002",
     "flightInfo": {
-      "flightNumber": "MU5678",
-      "airline": "中国东方航空",
-      "departureAirport": "上海虹桥国际机场",
-      "arrivalAirport": "广州白云国际机场",
-      "departureTime": "2024-11-16T14:20:00",
-      "arrivalTime": "2024-11-16T17:10:00"
+      "flightNumber": "CA1235",
+      "airline": "中国国际航空",
+      "departureAirport": "北京首都国际机场",
+      "arrivalAirport": "上海浦东国际机场",
+      "departureTime": "2025-10-20T15:30:00",
+      "arrivalTime": "2025-10-20T18:00:00"
     },
-    "cabinClass": "BUSINESS",
-    "price": 1580.0,
-    "discount": 0.90,
-    "availableSeats": 12
+    "cabinClass": "ECONOMY",
+    "price": 720.0,
+    "discount": 0.80,
+    "availableSeats": 35
   },
   {
     "flightId": "flight_003",
     "flightInfo": {
-      "flightNumber": "CZ9012",
-      "airline": "中国南方航空",
-      "departureAirport": "广州白云国际机场", 
-      "arrivalAirport": "深圳宝安国际机场",
-      "departureTime": "2024-11-17T10:15:00",
-      "arrivalTime": "2024-11-17T11:30:00"
+      "flightNumber": "MU5678",
+      "airline": "中国东方航空",
+      "departureAirport": "上海虹桥国际机场",
+      "arrivalAirport": "广州白云国际机场",
+      "departureTime": "2025-10-21T09:20:00",
+      "arrivalTime": "2025-10-21T12:10:00"
     },
     "cabinClass": "ECONOMY",
-    "price": 320.0,
+    "price": 850.0,
     "discount": 0.75,
     "availableSeats": 28
   },
   {
     "flightId": "flight_004",
     "flightInfo": {
+      "flightNumber": "MU5679",
+      "airline": "中国东方航空",
+      "departureAirport": "广州白云国际机场",
+      "arrivalAirport": "上海虹桥国际机场",
+      "departureTime": "2025-10-21T18:20:00",
+      "arrivalTime": "2025-10-21T21:10:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 890.0,
+    "discount": 0.70,
+    "availableSeats": 22
+  },
+  {
+    "flightId": "flight_005",
+    "flightInfo": {
+      "flightNumber": "CZ3001",
+      "airline": "中国南方航空",
+      "departureAirport": "上海浦东国际机场",
+      "arrivalAirport": "深圳宝安国际机场",
+      "departureTime": "2025-10-22T07:15:00",
+      "arrivalTime": "2025-10-22T10:30:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 920.0,
+    "discount": 0.82,
+    "availableSeats": 40
+  },
+  {
+    "flightId": "flight_006",
+    "flightInfo": {
+      "flightNumber": "CZ3002",
+      "airline": "中国南方航空",
+      "departureAirport": "深圳宝安国际机场",
+      "arrivalAirport": "上海浦东国际机场",
+      "departureTime": "2025-10-22T19:15:00",
+      "arrivalTime": "2025-10-22T22:30:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 980.0,
+    "discount": 0.78,
+    "availableSeats": 30
+  },
+  {
+    "flightId": "flight_007",
+    "flightInfo": {
       "flightNumber": "3U8888",
       "airline": "四川航空",
-      "departureAirport": "成都双流国际机场",
-      "arrivalAirport": "杭州萧山国际机场",
-      "departureTime": "2024-11-18T09:45:00",
-      "arrivalTime": "2024-11-18T12:30:00"
+      "departureAirport": "上海虹桥国际机场",
+      "arrivalAirport": "成都双流国际机场",
+      "departureTime": "2025-10-23T11:45:00",
+      "arrivalTime": "2025-10-23T14:30:00"
     },
-    "cabinClass": "PREMIUM_ECONOMY",
-    "price": 890.0,
-    "discount": 0.80,
+    "cabinClass": "ECONOMY",
+    "price": 780.0,
+    "discount": 0.85,
     "availableSeats": 18
+  },
+  {
+    "flightId": "flight_008",
+    "flightInfo": {
+      "flightNumber": "3U8889",
+      "airline": "四川航空",
+      "departureAirport": "成都双流国际机场",
+      "arrivalAirport": "上海虹桥国际机场",
+      "departureTime": "2025-10-23T20:45:00",
+      "arrivalTime": "2025-10-23T23:30:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 820.0,
+    "discount": 0.80,
+    "availableSeats": 25
+  },
+  {
+    "flightId": "flight_009",
+    "flightInfo": {
+      "flightNumber": "FM9001",
+      "airline": "上海航空",
+      "departureAirport": "上海浦东国际机场",
+      "arrivalAirport": "杭州萧山国际机场",
+      "departureTime": "2025-10-24T08:00:00",
+      "arrivalTime": "2025-10-24T09:10:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 320.0,
+    "discount": 0.90,
+    "availableSeats": 50
+  },
+  {
+    "flightId": "flight_010",
+    "flightInfo": {
+      "flightNumber": "FM9002",
+      "airline": "上海航空",
+      "departureAirport": "杭州萧山国际机场",
+      "arrivalAirport": "上海浦东国际机场",
+      "departureTime": "2025-10-24T19:00:00",
+      "arrivalTime": "2025-10-24T20:10:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 350.0,
+    "discount": 0.88,
+    "availableSeats": 45
+  },
+  {
+    "flightId": "flight_011",
+    "flightInfo": {
+      "flightNumber": "9C8801",
+      "airline": "春秋航空",
+      "departureAirport": "上海虹桥国际机场",
+      "arrivalAirport": "厦门高崎国际机场",
+      "departureTime": "2025-10-25T06:30:00",
+      "arrivalTime": "2025-10-25T08:45:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 580.0,
+    "discount": 0.75,
+    "availableSeats": 35
+  },
+  {
+    "flightId": "flight_012",
+    "flightInfo": {
+      "flightNumber": "9C8802",
+      "airline": "春秋航空",
+      "departureAirport": "厦门高崎国际机场",
+      "arrivalAirport": "上海虹桥国际机场",
+      "departureTime": "2025-10-25T21:30:00",
+      "arrivalTime": "2025-10-25T23:45:00"
+    },
+    "cabinClass": "ECONOMY",
+    "price": 620.0,
+    "discount": 0.72,
+    "availableSeats": 30
   }
 ]

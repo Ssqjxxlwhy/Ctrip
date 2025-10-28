@@ -241,7 +241,7 @@ private fun HeaderSection(
 
 @Composable
 private fun SortOptionsSection(
-    sortOptions: List<SortOption>,
+    sortOptions: List<HotelSortOption>,
     onSortOptionSelected: (String) -> Unit
 ) {
     LazyRow(

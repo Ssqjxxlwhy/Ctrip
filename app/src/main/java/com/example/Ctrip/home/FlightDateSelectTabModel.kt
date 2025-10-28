@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.example.Ctrip.utils.DateUtils
 
 class FlightDateSelectTabModel(private val context: Context) : FlightDateSelectTabContract.Model {
     
@@ -28,7 +29,7 @@ class FlightDateSelectTabModel(private val context: Context) : FlightDateSelectT
     
     private fun generateMonthsData(): List<FlightMonthData> {
         val months = mutableListOf<FlightMonthData>()
-        val currentDate = LocalDate.now()
+        val currentDate = DateUtils.getCurrentDate()
         
         // Generate data for October, November, December 2025
         for (monthOffset in 0..2) {
@@ -49,7 +50,7 @@ class FlightDateSelectTabModel(private val context: Context) : FlightDateSelectT
         val daysInMonth = firstDayOfMonth.lengthOfMonth()
         val flightPrices = getFlightPricesForMonth(year, month)
         val specialDates = getSpecialDates()
-        val today = LocalDate.now()
+        val today = DateUtils.getCurrentDate()
         
         for (dayOfMonth in 1..daysInMonth) {
             val date = LocalDate.of(year, month, dayOfMonth)
@@ -97,7 +98,7 @@ class FlightDateSelectTabModel(private val context: Context) : FlightDateSelectT
         return mapOf(
             LocalDate.of(2025, 10, 31) to "万圣夜",
             LocalDate.of(2025, 11, 27) to "感恩节",
-            LocalDate.now() to "今天"
+            DateUtils.getCurrentDate() to "今天"
         )
     }
     

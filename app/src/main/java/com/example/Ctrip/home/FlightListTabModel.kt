@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.example.Ctrip.utils.DateUtils
 
 class FlightListTabModel(private val context: Context) : FlightListTabContract.Model {
     
@@ -33,10 +34,10 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     }
     
     override fun getDateOptions(baseDate: LocalDate): List<DateOption> {
-        val today = LocalDate.now()
+        val today = DateUtils.getCurrentDate()
         val options = mutableListOf<DateOption>()
         
-        for (i in 0..4) {
+        for (i in 0..5) {
             val date = today.plusDays(i.toLong())
             val label = when (i) {
                 0 -> "今天"
@@ -71,7 +72,7 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                     date = date,
                     displayDate = displayDate,
                     price = price,
-                    isSelected = i == 1, // Default select tomorrow
+                    isSelected = i == 0, // Default select today (10月20日)
                     isToday = i == 0
                 )
             )
@@ -122,6 +123,19 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
         val flights = mutableListOf<FlightItem>()
         val dateKey = "${departureCity}_${arrivalCity}"
         
+        // 检查日期是否在有效范围内（允许从当前日期到未来30天）
+        val startDate = DateUtils.getCurrentDate()
+        val endDate = startDate.plusDays(30)
+        if (date.isBefore(startDate) || date.isAfter(endDate)) {
+            return emptyList() // 返回空列表，表示没有航班
+        }
+        
+        // 定义有航班数据的城市列表
+        val validCities = listOf("上海", "北京", "广州", "深圳", "成都")
+        if (departureCity !in validCities || arrivalCity !in validCities) {
+            return emptyList() // 如果城市不在有效列表中，返回空列表
+        }
+        
         // 根据具体的城市组合和日期生成相应的航班
         when (dateKey) {
             "上海_北京" -> {
@@ -147,12 +161,6 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
             }
             "成都_上海" -> {
                 flights.addAll(generateChengduToShanghaiFlights(date))
-            }
-            "上海_杭州" -> {
-                flights.addAll(generateShanghaiToHangzhouFlights(date))
-            }
-            "杭州_上海" -> {
-                flights.addAll(generateHangzhouToShanghaiFlights(date))
             }
             "北京_广州" -> {
                 flights.addAll(generateBeijingToGuangzhouFlights(date))
@@ -191,8 +199,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 flights.addAll(generateChengduToShenzhenFlights(date))
             }
             else -> {
-                // 默认航班，适用于其他城市组合
-                flights.addAll(generateDefaultFlights(departureCity, arrivalCity, date))
+                // 对于其他城市组合，返回空列表
+                return emptyList()
             }
         }
         
@@ -555,104 +563,7 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
         )
     }
     
-    // 上海到杭州航班 (短程航线)
-    private fun generateShanghaiToHangzhouFlights(date: LocalDate): List<FlightItem> {
-        val dayPrice = calculateDayPrice(date, 180)
-        return listOf(
-            FlightItem(
-                id = "SHA_HGH_${date}_1",
-                departureTime = "09:30",
-                arrivalTime = "10:20",
-                departureAirport = "虹桥T2",
-                arrivalAirport = "萧山T3",
-                airline = "吉祥",
-                flightNumber = "HO1039",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice}",
-                originalPrice = "¥${dayPrice + 15}",
-                discount = "短程特价",
-                tags = listOf("快速直达", "公务出行"),
-                hasWifi = true
-            ),
-            FlightItem(
-                id = "SHA_HGH_${date}_2",
-                departureTime = "17:15",
-                arrivalTime = "18:05",
-                departureAirport = "虹桥T1",
-                arrivalAirport = "萧山T1",
-                airline = "春秋",
-                flightNumber = "9C8863",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice - 20}",
-                originalPrice = "¥${dayPrice}",
-                discount = "超值价",
-                tags = listOf("经济实惠"),
-                hasWifi = false
-            )
-        )
-    }
     
-    // 杭州到上海航班
-    private fun generateHangzhouToShanghaiFlights(date: LocalDate): List<FlightItem> {
-        val dayPrice = calculateDayPrice(date, 175)
-        return listOf(
-            FlightItem(
-                id = "HGH_SHA_${date}_1",
-                departureTime = "11:45",
-                arrivalTime = "12:35",
-                departureAirport = "萧山T3",
-                arrivalAirport = "虹桥T2",
-                airline = "吉祥",
-                flightNumber = "HO1040",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice}",
-                originalPrice = "¥${dayPrice + 10}",
-                discount = "商务优选",
-                tags = listOf("快速便捷", "商务舱升级"),
-                hasWifi = true
-            )
-        )
-    }
-    
-    // 其他城市组合的默认航班
-    private fun generateDefaultFlights(departureCity: String, arrivalCity: String, date: LocalDate): List<FlightItem> {
-        val dayPrice = calculateDayPrice(date, 350)
-        val departureAirport = getAirportForCity(departureCity)
-        val arrivalAirport = getAirportForCity(arrivalCity)
-        
-        return listOf(
-            FlightItem(
-                id = "${departureCity}_${arrivalCity}_${date}_1",
-                departureTime = "09:15",
-                arrivalTime = "11:35",
-                departureAirport = departureAirport,
-                arrivalAirport = arrivalAirport,
-                airline = "东航",
-                flightNumber = "MU${(1000..9999).random()}",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice}",
-                originalPrice = "¥${dayPrice + 30}",
-                discount = "特价优惠",
-                tags = listOf("东航优选"),
-                hasWifi = true
-            ),
-            FlightItem(
-                id = "${departureCity}_${arrivalCity}_${date}_2",
-                departureTime = "14:20",
-                arrivalTime = "16:45",
-                departureAirport = departureAirport,
-                arrivalAirport = arrivalAirport,
-                airline = "南航",
-                flightNumber = "CZ${(1000..9999).random()}",
-                aircraftType = "波音737(中)",
-                price = "¥${dayPrice + 20}",
-                originalPrice = "¥${dayPrice + 50}",
-                discount = "南航特惠",
-                tags = listOf("南航服务"),
-                hasWifi = true
-            )
-        )
-    }
     
     // 根据日期计算价格（考虑周末、工作日等因素）
     private fun calculateDayPrice(date: LocalDate, basePrice: Int): Int {

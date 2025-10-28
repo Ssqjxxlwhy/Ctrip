@@ -30,7 +30,12 @@
       "Bash(netsh:*)",
       "Bash(.gradlew --stop)",
       "Bash(gradlew.bat:*)",
-      "Bash(kotlin:*)"
+      "Bash(kotlin:*)",
+      "Bash(./gradlew.bat build:*)",
+      "Bash(./gradlew.bat compileDebugKotlin:*)",
+      "Bash(JAVA_HOME=\"D:/AndroidStudio/jbr\":*)",
+      "Bash(./gradlew.bat:*)",
+      "Bash(.gradlew.bat build:*)"
     ],
     "deny": []
   }

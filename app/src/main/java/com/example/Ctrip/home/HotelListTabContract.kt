@@ -5,7 +5,7 @@ import java.time.LocalDate
 // Data classes for Hotel List
 data class HotelListData(
     val searchParams: HotelListSearchParams,
-    val sortOptions: List<SortOption>,
+    val sortOptions: List<HotelSortOption>,
     val filterTags: List<FilterTag>,
     val firstStayBenefit: FirstStayBenefit,
     val hotels: List<HotelItem>
@@ -20,7 +20,7 @@ data class HotelListSearchParams(
     val searchQuery: String = ""
 )
 
-data class SortOption(
+data class HotelSortOption(
     val id: String,
     val title: String,
     val isSelected: Boolean,
