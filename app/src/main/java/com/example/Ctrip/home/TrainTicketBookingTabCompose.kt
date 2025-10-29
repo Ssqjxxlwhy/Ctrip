@@ -29,15 +29,23 @@ import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.example.Ctrip.utils.DateUtils
+import com.example.Ctrip.model.City
 
 @Composable
-fun TrainTicketBookingTabScreen() {
+fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
     val context = LocalContext.current
     val model = remember { TrainTicketBookingTabModelImpl(context) }
     val presenter = remember { TrainTicketBookingTabPresenter(model) }
-    
+
     var trainData by remember { mutableStateOf<TrainTicketBookingData?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var showDepartureSelect by remember { mutableStateOf(false) }
+    var showDestinationSelect by remember { mutableStateOf(false) }
+    var showDateSelect by remember { mutableStateOf(false) }
+    var showTrainList by remember { mutableStateOf(false) }
+    var departureCity by remember { mutableStateOf("上海") }
+    var arrivalCity by remember { mutableStateOf("北京") }
+    var departureDate by remember { mutableStateOf(LocalDate.of(2025, 10, 20)) }
     
     val view = object : TrainTicketBookingTabContract.View {
         override fun showTrainData(data: TrainTicketBookingData) {
@@ -57,15 +65,22 @@ fun TrainTicketBookingTabScreen() {
         }
         
         override fun navigateToTrainSearch(searchParams: TrainSearchParams) {
-            Toast.makeText(context, "搜索火车票: ${searchParams.departureCity} → ${searchParams.arrivalCity}", Toast.LENGTH_SHORT).show()
+            departureCity = searchParams.departureCity
+            arrivalCity = searchParams.arrivalCity
+            departureDate = searchParams.departureDate
+            showTrainList = true
         }
         
         override fun showDatePicker() {
-            Toast.makeText(context, "选择出发日期", Toast.LENGTH_SHORT).show()
+            showDateSelect = true
         }
         
         override fun showCitySelector(isDeparture: Boolean) {
-            Toast.makeText(context, if (isDeparture) "选择出发城市" else "选择到达城市", Toast.LENGTH_SHORT).show()
+            if (isDeparture) {
+                showDepartureSelect = true
+            } else {
+                showDestinationSelect = true
+            }
         }
         
         override fun swapCities() {
@@ -95,8 +110,150 @@ fun TrainTicketBookingTabScreen() {
             presenter.detachView()
         }
     }
-    
-    LazyColumn(
+
+    if (showDepartureSelect) {
+        // 显示出发地选择页面
+        val departureView = remember { TrainDepartureSelectTabView(context) }
+
+        LaunchedEffect(Unit) {
+            departureView.initialize()
+        }
+
+        departureView.TrainDepartureSelectTabScreen(
+            onCitySelected = { city ->
+                departureCity = city.cityName
+                // 更新trainData中的出发城市
+                trainData?.let { data ->
+                    trainData = data.copy(
+                        searchParams = data.searchParams.copy(
+                            departureCity = city.cityName
+                        )
+                    )
+                }
+                showDepartureSelect = false
+            },
+            onClose = {
+                showDepartureSelect = false
+            }
+        )
+        return
+    }
+
+    if (showDestinationSelect) {
+        // 显示目的地选择页面
+        val destinationView = remember { TrainDestinationSelectTabView(context) }
+
+        LaunchedEffect(Unit) {
+            destinationView.initialize(departureCity)
+        }
+
+        destinationView.TrainDestinationSelectTabScreen(
+            onCitySelected = { city ->
+                arrivalCity = city.cityName
+                // 更新trainData中的到达城市
+                trainData?.let { data ->
+                    trainData = data.copy(
+                        searchParams = data.searchParams.copy(
+                            arrivalCity = city.cityName
+                        )
+                    )
+                }
+                showDestinationSelect = false
+            },
+            onClose = {
+                showDestinationSelect = false
+            }
+        )
+        return
+    }
+
+    if (showDateSelect) {
+        // 显示日期选择页面
+        val dateView = remember { TrainDateSelectTabView(context) }
+
+        LaunchedEffect(Unit) {
+            dateView.initialize()
+        }
+
+        dateView.TrainDateSelectTabScreen(
+            onDateSelected = { date ->
+                departureDate = date
+                // 更新trainData中的出发日期
+                trainData?.let { data ->
+                    trainData = data.copy(
+                        searchParams = data.searchParams.copy(
+                            departureDate = date
+                        )
+                    )
+                }
+                showDateSelect = false
+            },
+            onClose = {
+                showDateSelect = false
+            }
+        )
+        return
+    }
+
+    if (showTrainList) {
+        // 显示火车票列表页面
+        val trainListView = remember { TrainMateListTabView(context) }
+
+        LaunchedEffect(Unit) {
+            trainListView.initialize(departureCity, arrivalCity, departureDate)
+        }
+
+        trainListView.TrainMateListTabScreen(
+            onClose = {
+                showTrainList = false
+            }
+        )
+        return
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 返回按钮栏
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier
+                        .clickable { onClose() }
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "返回",
+                        tint = Color(0xFF4A90E2),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "返回",
+                        color = Color(0xFF4A90E2),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "火车票预订",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+
+        LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFF5F5F5)),
@@ -146,13 +303,14 @@ fun TrainTicketBookingTabScreen() {
             BottomNavigationSection(presenter)
         }
     }
-    
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

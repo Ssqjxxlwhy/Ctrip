@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.sp
 import com.example.Ctrip.model.City
 import com.example.Ctrip.model.LocationRegion
 
-class DestinationSelectTabView(private val context: Context) : DestinationSelectTabContract.View {
-    
-    private lateinit var presenter: DestinationSelectTabContract.Presenter
+class FlightDestinationSelectTabView(private val context: Context) : FlightDestinationSelectTabContract.View {
+
+    private lateinit var presenter: FlightDestinationSelectTabContract.Presenter
     private var destinationData by mutableStateOf<DestinationSelectionData?>(null)
     private var isLoading by mutableStateOf(false)
     private var searchText by mutableStateOf("")
@@ -38,15 +38,15 @@ class DestinationSelectTabView(private val context: Context) : DestinationSelect
     private var isMultiSelect by mutableStateOf(false)
     
     fun initialize() {
-        val model = DestinationSelectTabModel(context)
-        presenter = DestinationSelectTabPresenter(model)
+        val model = FlightDestinationSelectTabModel(context)
+        presenter = FlightDestinationSelectTabPresenter(model)
         presenter.attachView(this)
         presenter.loadDestinationData()
     }
-    
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun DestinationSelectTabScreen(
+    fun FlightDestinationSelectTabScreen(
         onDestinationSelected: (City) -> Unit = {},
         onClose: () -> Unit = {}
     ) {

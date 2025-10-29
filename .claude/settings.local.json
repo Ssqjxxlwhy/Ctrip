@@ -35,7 +35,12 @@
       "Bash(./gradlew.bat compileDebugKotlin:*)",
       "Bash(JAVA_HOME=\"D:/AndroidStudio/jbr\":*)",
       "Bash(./gradlew.bat:*)",
-      "Bash(.gradlew.bat build:*)"
+      "Bash(.gradlew.bat build:*)",
+      "Bash(timeout /t 30)",
+      "Bash(python generate_train_data.py:*)",
+      "Bash(python -c:*)",
+      "Read(//d/**)",
+      "Bash(python:*)"
     ],
     "deny": []
   }

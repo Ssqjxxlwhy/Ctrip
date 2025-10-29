@@ -19,21 +19,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabContract.View {
+class FlightPaymentSuccessTabView(private val context: Context) : FlightPaymentSuccessTabContract.View {
 
-    private lateinit var presenter: PaymentSuccessTabContract.Presenter
-    private var paymentSuccessData by mutableStateOf<PaymentSuccessData?>(null)
+    private lateinit var presenter: FlightPaymentSuccessTabContract.Presenter
+    private var paymentSuccessData by mutableStateOf<FlightPaymentSuccessData?>(null)
     private var isLoading by mutableStateOf(false)
 
     fun initialize(serviceData: ServiceSelectData) {
-        val model = PaymentSuccessTabModel(context)
-        presenter = PaymentSuccessTabPresenter(model)
+        val model = FlightPaymentSuccessTabModel(context)
+        presenter = FlightPaymentSuccessTabPresenter(model)
         presenter.attachView(this)
         presenter.loadPaymentSuccessData(serviceData)
     }
 
     @Composable
-    fun PaymentSuccessTabScreen(
+    fun FlightPaymentSuccessTabScreen(
         onNavigateToOrderList: () -> Unit = {},
         onNavigateToHome: () -> Unit = {},
         onBack: () -> Unit = {}
@@ -73,7 +73,7 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
                         text = "¥${data.paymentInfo.amount}.00",
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFFF3B30)
+                        color = Color(0xFF4A90E2)
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -163,7 +163,7 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .background(Color(0xFF4CAF50), CircleShape),
+                .background(Color(0xFF4A90E2), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -247,7 +247,7 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
                     Text(
                         text = orderInfo.estimatedDate,
                         fontSize = 14.sp,
-                        color = Color(0xFFFF3B30),
+                        color = Color(0xFF4A90E2),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -273,11 +273,11 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
                     .weight(1f)
                     .height(50.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color(0xFFFF3B30)
+                    contentColor = Color(0xFF4A90E2)
                 ),
                 border = androidx.compose.foundation.BorderStroke(
                     1.dp,
-                    Color(0xFFFF3B30)
+                    Color(0xFF4A90E2)
                 ),
                 shape = RoundedCornerShape(25.dp)
             ) {
@@ -295,7 +295,7 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
                     .weight(1f)
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF3B30)
+                    containerColor = Color(0xFF4A90E2)
                 ),
                 shape = RoundedCornerShape(25.dp)
             ) {
@@ -310,7 +310,7 @@ class PaymentSuccessTabView(private val context: Context) : PaymentSuccessTabCon
     }
 
     // View interface implementations
-    override fun showPaymentSuccessData(data: PaymentSuccessData) {
+    override fun showPaymentSuccessData(data: FlightPaymentSuccessData) {
         paymentSuccessData = data
     }
 

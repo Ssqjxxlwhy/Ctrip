@@ -6,13 +6,13 @@ import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PaymentSuccessTabModel(private val context: Context) : PaymentSuccessTabContract.Model {
+class FlightPaymentSuccessTabModel(private val context: Context) : FlightPaymentSuccessTabContract.Model {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("payment_success_data", Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    override fun getPaymentSuccessData(serviceData: ServiceSelectData): PaymentSuccessData? {
+    override fun getPaymentSuccessData(serviceData: ServiceSelectData): FlightPaymentSuccessData? {
         return try {
             generatePaymentSuccessData(serviceData)
         } catch (e: Exception) {
@@ -20,11 +20,11 @@ class PaymentSuccessTabModel(private val context: Context) : PaymentSuccessTabCo
         }
     }
 
-    private fun generatePaymentSuccessData(serviceData: ServiceSelectData): PaymentSuccessData {
+    private fun generatePaymentSuccessData(serviceData: ServiceSelectData): FlightPaymentSuccessData {
         // 计算最终支付金额（包含选择的服务）
         val totalAmount = calculateTotalAmount(serviceData)
 
-        val paymentInfo = PaymentSuccessInfo(
+        val paymentInfo = FlightPaymentSuccessInfo(
             amount = totalAmount,
             paymentMethod = "微信支付"
         )
@@ -40,7 +40,7 @@ class PaymentSuccessTabModel(private val context: Context) : PaymentSuccessTabCo
             estimatedDate = serviceData.flightInfo.date
         )
 
-        return PaymentSuccessData(
+        return FlightPaymentSuccessData(
             paymentInfo = paymentInfo,
             orderInfo = orderInfo
         )
@@ -70,7 +70,7 @@ class PaymentSuccessTabModel(private val context: Context) : PaymentSuccessTabCo
         return "CT${timestamp}${random}"
     }
 
-    override fun savePaymentSuccessAction(data: PaymentSuccessData) {
+    override fun savePaymentSuccessAction(data: FlightPaymentSuccessData) {
         val paymentSuccessAction = mapOf(
             "action" to "payment_completed",
             "timestamp" to System.currentTimeMillis(),

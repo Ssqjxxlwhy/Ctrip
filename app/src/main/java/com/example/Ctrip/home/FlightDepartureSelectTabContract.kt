@@ -4,7 +4,7 @@ import com.example.Ctrip.model.City
 import com.example.Ctrip.model.CitySelectionData
 import com.example.Ctrip.model.LocationRegion
 
-interface DepartureSelectTabContract {
+interface FlightDepartureSelectTabContract {
     
     interface View {
         fun showCitySelectionData(data: CitySelectionData)

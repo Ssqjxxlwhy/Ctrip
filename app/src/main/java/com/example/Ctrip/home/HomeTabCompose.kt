@@ -42,9 +42,10 @@ fun HomeTabScreen(
     val context = LocalContext.current
     val model = remember { HomeTabModelImpl(context) }
     val presenter = remember { HomeTabPresenter(model) }
-    
+
     var homeData by remember { mutableStateOf<HomeTabData?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var isFlightBookingInSubPage by remember { mutableStateOf(false) }
     
     val view = object : HomeTabContract.View {
         override fun showHomeData(data: HomeTabData) {
@@ -168,61 +169,71 @@ fun HomeTabScreen(
             }
         }
     } else if (showFlightBooking) {
-        // Flight booking content - 直接全屏显示，不包含额外的顶部栏
-        FlightBookingTabScreen()
-    } else if (showTrainBooking) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Back button - Fixed header
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = ComposeColor.White,
-                shadowElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable { 
-                                println("返回按钮被点击了")  // 调试日志
-                                onTrainBookingChanged(false) 
-                            }
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Back button - Fixed header (conditionally visible)
+                if (!isFlightBookingInSubPage) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = ComposeColor.White,
+                        shadowElevation = 4.dp
                     ) {
-                        Icon(
-                            Icons.Default.ArrowBack, 
-                            contentDescription = "返回",
-                            tint = ComposeColor(0xFF4A90E2),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "返回",
-                            color = ComposeColor(0xFF4A90E2),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .clickable {
+                                        println("返回按钮被点击了")  // 调试日志
+                                        onFlightBookingChanged(false)
+                                    }
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = "返回",
+                                    tint = ComposeColor(0xFF4A90E2),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "返回",
+                                    color = ComposeColor(0xFF4A90E2),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "机票预订",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "火车票预订",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                }
+
+                // Flight booking content
+                Box(modifier = Modifier.weight(1f)) {
+                    FlightBookingTabScreen(
+                        onNavigationStateChanged = { isInSubPage ->
+                            isFlightBookingInSubPage = isInSubPage
+                        }
                     )
                 }
             }
-            
-            // Train booking content
-            Box(modifier = Modifier.weight(1f)) {
-                TrainTicketBookingTabScreen()
-            }
         }
+    } else if (showTrainBooking) {
+        // Train booking content - without fixed header
+        TrainTicketBookingTabScreen(
+            onClose = {
+                onTrainBookingChanged(false)
+            }
+        )
     } else {
         LazyColumn(
             modifier = Modifier

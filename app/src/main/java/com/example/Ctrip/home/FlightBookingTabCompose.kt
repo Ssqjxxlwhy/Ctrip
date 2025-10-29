@@ -27,11 +27,13 @@ import java.time.format.DateTimeFormatter
 import com.example.Ctrip.utils.DateUtils
 
 @Composable
-fun FlightBookingTabScreen() {
+fun FlightBookingTabScreen(
+    onNavigationStateChanged: (isInSubPage: Boolean) -> Unit = {}
+) {
     val context = LocalContext.current
     val model = remember { FlightBookingTabModelImpl(context) }
     val presenter = remember { FlightBookingTabPresenter(model) }
-    
+
     var flightData by remember { mutableStateOf<FlightBookingData?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var showDepartureSelect by remember { mutableStateOf(false) }
@@ -107,7 +109,13 @@ fun FlightBookingTabScreen() {
             presenter.detachView()
         }
     }
-    
+
+    // 通知父组件当前是否在子页面
+    LaunchedEffect(showFlightList, showCabinTypeSelect, showOrderForm, showServiceSelect, showPaymentSuccess) {
+        val isInSubPage = showFlightList || showCabinTypeSelect || showOrderForm || showServiceSelect || showPaymentSuccess
+        onNavigationStateChanged(isInSubPage)
+    }
+
     if (showFlightList) {
         // Flight List Screen - 完全替换机票预订页面
         val flightListView = remember { FlightListTabView(context) }
@@ -188,11 +196,11 @@ fun FlightBookingTabScreen() {
             
             // Departure City Selection Screen
             if (showDepartureSelect) {
-                val departureView = remember { DepartureSelectTabView(context) }
+                val departureView = remember { FlightDepartureSelectTabView(context) }
                 LaunchedEffect(Unit) {
                     departureView.initialize()
                 }
-                departureView.DepartureSelectTabScreen(
+                departureView.FlightDepartureSelectTabScreen(
                     onCitySelected = { city ->
                         selectedDepartureCity = city
                         // 通知presenter更新出发地城市
@@ -208,11 +216,11 @@ fun FlightBookingTabScreen() {
             
             // Destination City Selection Screen
             if (showDestinationSelect) {
-                val destinationView = remember { DestinationSelectTabView(context) }
+                val destinationView = remember { FlightDestinationSelectTabView(context) }
                 LaunchedEffect(Unit) {
                     destinationView.initialize()
                 }
-                destinationView.DestinationSelectTabScreen(
+                destinationView.FlightDestinationSelectTabScreen(
                     onDestinationSelected = { city ->
                         selectedDestinationCity = city
                         // 通知presenter更新目的地城市
@@ -304,12 +312,12 @@ fun FlightBookingTabScreen() {
     }
 
     if (showPaymentSuccess && currentServiceData != null) {
-        // Payment Success Screen
-        val paymentSuccessView = remember { PaymentSuccessTabView(context) }
+        // Flight Payment Success Screen
+        val paymentSuccessView = remember { FlightPaymentSuccessTabView(context) }
         LaunchedEffect(currentServiceData) {
             paymentSuccessView.initialize(currentServiceData!!)
         }
-        paymentSuccessView.PaymentSuccessTabScreen(
+        paymentSuccessView.FlightPaymentSuccessTabScreen(
             onNavigateToOrderList = {
                 Toast.makeText(context, "导航到订单列表页面", Toast.LENGTH_SHORT).show()
             },

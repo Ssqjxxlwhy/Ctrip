@@ -3,13 +3,13 @@ package com.example.Ctrip.home
 import com.example.Ctrip.model.City
 import com.example.Ctrip.model.LocationRegion
 
-class DestinationSelectTabPresenter(private val model: DestinationSelectTabContract.Model) : DestinationSelectTabContract.Presenter {
-    
-    private var view: DestinationSelectTabContract.View? = null
+class FlightDestinationSelectTabPresenter(private val model: FlightDestinationSelectTabContract.Model) : FlightDestinationSelectTabContract.Presenter {
+
+    private var view: FlightDestinationSelectTabContract.View? = null
     private var currentRegion = LocationRegion.DOMESTIC
     private var isMultiSelect = false
     
-    override fun attachView(view: DestinationSelectTabContract.View) {
+    override fun attachView(view: FlightDestinationSelectTabContract.View) {
         this.view = view
     }
     

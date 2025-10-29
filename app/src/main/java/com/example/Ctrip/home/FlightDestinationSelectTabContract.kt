@@ -43,7 +43,7 @@ data class HotRegion(
 )
 
 // Contract interfaces
-interface DestinationSelectTabContract {
+interface FlightDestinationSelectTabContract {
     
     interface View {
         fun showDestinationData(data: DestinationSelectionData)

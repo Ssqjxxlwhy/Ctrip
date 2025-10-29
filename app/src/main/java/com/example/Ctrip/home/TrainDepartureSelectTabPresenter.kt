@@ -3,27 +3,26 @@ package com.example.Ctrip.home
 import com.example.Ctrip.model.City
 import com.example.Ctrip.model.CitySelectionData
 import com.example.Ctrip.model.LocationRegion
-import com.example.Ctrip.home.DepartureSelectTabContract
 
-class DepartureSelectTabPresenter(private val model: DepartureSelectTabContract.Model) : DepartureSelectTabContract.Presenter {
-    
-    private var view: DepartureSelectTabContract.View? = null
+class TrainDepartureSelectTabPresenter(private val model: TrainDepartureSelectTabContract.Model) : TrainDepartureSelectTabContract.Presenter {
+
+    private var view: TrainDepartureSelectTabContract.View? = null
     private var currentCityData: CitySelectionData? = null
     private var currentRegion: LocationRegion = LocationRegion.DOMESTIC
     private var isMultiSelect: Boolean = false
     private var searchQuery: String = ""
-    
-    override fun attachView(view: DepartureSelectTabContract.View) {
+
+    override fun attachView(view: TrainDepartureSelectTabContract.View) {
         this.view = view
     }
-    
+
     override fun detachView() {
         this.view = null
     }
-    
+
     override fun loadCityData() {
         view?.showLoading()
-        
+
         try {
             val cityData = model.getCitySelectionData()
             if (cityData != null) {
@@ -38,16 +37,16 @@ class DepartureSelectTabPresenter(private val model: DepartureSelectTabContract.
             view?.hideLoading()
         }
     }
-    
+
     override fun onCityClicked(city: City) {
         model.updateSearchHistory(city)
         view?.onCitySelected(city)
     }
-    
+
     override fun onCloseClicked() {
         view?.onClose()
     }
-    
+
     override fun onSearchClicked(query: String) {
         searchQuery = query
         if (query.isNotBlank()) {
@@ -74,11 +73,11 @@ class DepartureSelectTabPresenter(private val model: DepartureSelectTabContract.
             loadCityData()
         }
     }
-    
+
     override fun onRegionTabClicked(region: LocationRegion) {
         currentRegion = region
         view?.onRegionChanged(region)
-        
+
         try {
             val citiesByRegion = model.getCitiesByRegion(region)
             val cityData = CitySelectionData(
@@ -98,15 +97,15 @@ class DepartureSelectTabPresenter(private val model: DepartureSelectTabContract.
             view?.showError("切换区域失败: ${e.message}")
         }
     }
-    
+
     override fun onMultiSelectTabClicked(isMultiSelect: Boolean) {
         this.isMultiSelect = isMultiSelect
         view?.onMultiSelectToggled(isMultiSelect)
     }
-    
+
     override fun onLocationEnabledChanged(enabled: Boolean) {
         view?.showLoading()
-        
+
         try {
             val updatedData = currentCityData?.copy(isLocationEnabled = enabled)
             if (updatedData != null) {

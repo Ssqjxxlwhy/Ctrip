@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.example.Ctrip.model.City
 import com.example.Ctrip.model.LocationRegion
 
-class DestinationSelectTabModel(private val context: Context) : DestinationSelectTabContract.Model {
+class FlightDestinationSelectTabModel(private val context: Context) : FlightDestinationSelectTabContract.Model {
     
     private val sharedPreferences: SharedPreferences = 
         context.getSharedPreferences("destination_select_data", Context.MODE_PRIVATE)

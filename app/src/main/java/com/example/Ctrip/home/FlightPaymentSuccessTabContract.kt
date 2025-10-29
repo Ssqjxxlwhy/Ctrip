@@ -1,12 +1,12 @@
 package com.example.Ctrip.home
 
-// 支付成功页面数据模型
-data class PaymentSuccessData(
-    val paymentInfo: PaymentSuccessInfo,
+// 机票支付成功页面数据模型
+data class FlightPaymentSuccessData(
+    val paymentInfo: FlightPaymentSuccessInfo,
     val orderInfo: OrderSuccessInfo
 )
 
-data class PaymentSuccessInfo(
+data class FlightPaymentSuccessInfo(
     val amount: Int, // 支付金额
     val paymentMethod: String // 支付方式 "微信支付"、"支付宝"等
 )
@@ -20,10 +20,10 @@ data class OrderSuccessInfo(
 )
 
 // Contract接口定义
-interface PaymentSuccessTabContract {
+interface FlightPaymentSuccessTabContract {
 
     interface View {
-        fun showPaymentSuccessData(data: PaymentSuccessData)
+        fun showPaymentSuccessData(data: FlightPaymentSuccessData)
         fun showLoading()
         fun hideLoading()
         fun showError(message: String)
@@ -42,7 +42,7 @@ interface PaymentSuccessTabContract {
     }
 
     interface Model {
-        fun getPaymentSuccessData(serviceData: ServiceSelectData): PaymentSuccessData?
-        fun savePaymentSuccessAction(data: PaymentSuccessData)
+        fun getPaymentSuccessData(serviceData: ServiceSelectData): FlightPaymentSuccessData?
+        fun savePaymentSuccessAction(data: FlightPaymentSuccessData)
     }
 }

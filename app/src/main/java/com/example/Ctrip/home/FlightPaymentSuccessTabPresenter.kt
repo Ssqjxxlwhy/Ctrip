@@ -1,13 +1,13 @@
 package com.example.Ctrip.home
 
-class PaymentSuccessTabPresenter(
-    private val model: PaymentSuccessTabContract.Model
-) : PaymentSuccessTabContract.Presenter {
+class FlightPaymentSuccessTabPresenter(
+    private val model: FlightPaymentSuccessTabContract.Model
+) : FlightPaymentSuccessTabContract.Presenter {
 
-    private var view: PaymentSuccessTabContract.View? = null
-    private var currentData: PaymentSuccessData? = null
+    private var view: FlightPaymentSuccessTabContract.View? = null
+    private var currentData: FlightPaymentSuccessData? = null
 
-    override fun attachView(view: PaymentSuccessTabContract.View) {
+    override fun attachView(view: FlightPaymentSuccessTabContract.View) {
         this.view = view
     }
 
