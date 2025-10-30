@@ -40,7 +40,9 @@
       "Bash(python generate_train_data.py:*)",
       "Bash(python -c:*)",
       "Read(//d/**)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(set JAVA_HOME=D:AndroidStudiojbr)",
+      "Bash(\"D:\\AndroidStudio\\jbr\\bin\\java.exe\" -version)"
     ],
     "deny": []
   }

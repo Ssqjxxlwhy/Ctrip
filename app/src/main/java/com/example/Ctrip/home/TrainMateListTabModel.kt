@@ -16,12 +16,25 @@ class TrainMateListTabModel(private val context: Context) : TrainMateListTabCont
         val allTrains = loadTrainsFromAssets()
         val dateStr = departureDate.format(DateTimeFormatter.ISO_DATE)
 
+        android.util.Log.d("TrainMateListTabModel", "getTrainList called with: departureCity=$departureCity, arrivalCity=$arrivalCity, dateStr=$dateStr")
+        android.util.Log.d("TrainMateListTabModel", "Total trains loaded: ${allTrains.size}")
+
         // 根据搜索条件筛选火车票
-        return allTrains.filter { train ->
+        val result = allTrains.filter { train ->
             train.departureCity == departureCity &&
             train.arrivalCity == arrivalCity &&
             train.departureDate == dateStr
         }
+
+        android.util.Log.d("TrainMateListTabModel", "Filtered trains count: ${result.size}")
+        if (result.isEmpty()) {
+            android.util.Log.d("TrainMateListTabModel", "Sample train data (first 3):")
+            allTrains.take(3).forEach { train ->
+                android.util.Log.d("TrainMateListTabModel", "  Train: ${train.departureCity} -> ${train.arrivalCity} on ${train.departureDate}")
+            }
+        }
+
+        return result
     }
 
     override fun filterTrains(trains: List<TrainTicket>, filterOptions: TrainFilterOptions): List<TrainTicket> {

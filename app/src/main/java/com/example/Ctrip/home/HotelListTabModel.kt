@@ -561,7 +561,6 @@ class HotelListTabModelImpl(private val context: Context) : HotelListTabModel {
         return listOf(
             HotelSortOption("welcome", "欢迎度排序", true),
             HotelSortOption("distance", "位置距离", false),
-            HotelSortOption("price", "价格/星级", false),
             HotelSortOption("filter", "筛选", false, false)
         )
     }

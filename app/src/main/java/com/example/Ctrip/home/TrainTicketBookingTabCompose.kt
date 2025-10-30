@@ -50,6 +50,10 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
     val view = object : TrainTicketBookingTabContract.View {
         override fun showTrainData(data: TrainTicketBookingData) {
             trainData = data
+            // 同步更新UI状态变量
+            departureCity = data.searchParams.departureCity
+            arrivalCity = data.searchParams.arrivalCity
+            departureDate = data.searchParams.departureDate
         }
         
         override fun showLoading() {
@@ -65,9 +69,11 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
         }
         
         override fun navigateToTrainSearch(searchParams: TrainSearchParams) {
+            android.util.Log.d("TrainTicketBooking", "navigateToTrainSearch called: ${searchParams.departureCity} -> ${searchParams.arrivalCity} on ${searchParams.departureDate}")
             departureCity = searchParams.departureCity
             arrivalCity = searchParams.arrivalCity
             departureDate = searchParams.departureDate
+            android.util.Log.d("TrainTicketBooking", "State variables updated: $departureCity -> $arrivalCity on $departureDate")
             showTrainList = true
         }
         
@@ -121,14 +127,16 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
 
         departureView.TrainDepartureSelectTabScreen(
             onCitySelected = { city ->
+                android.util.Log.d("TrainTicketBooking", "Departure city selected: ${city.cityName}")
                 departureCity = city.cityName
                 // 更新trainData中的出发城市
                 trainData?.let { data ->
-                    trainData = data.copy(
-                        searchParams = data.searchParams.copy(
-                            departureCity = city.cityName
-                        )
+                    val updatedParams = data.searchParams.copy(
+                        departureCity = city.cityName
                     )
+                    trainData = data.copy(searchParams = updatedParams)
+                    // 同步更新 model 中的搜索参数
+                    presenter.updateSearchParams(updatedParams)
                 }
                 showDepartureSelect = false
             },
@@ -149,14 +157,16 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
 
         destinationView.TrainDestinationSelectTabScreen(
             onCitySelected = { city ->
+                android.util.Log.d("TrainTicketBooking", "Arrival city selected: ${city.cityName}")
                 arrivalCity = city.cityName
                 // 更新trainData中的到达城市
                 trainData?.let { data ->
-                    trainData = data.copy(
-                        searchParams = data.searchParams.copy(
-                            arrivalCity = city.cityName
-                        )
+                    val updatedParams = data.searchParams.copy(
+                        arrivalCity = city.cityName
                     )
+                    trainData = data.copy(searchParams = updatedParams)
+                    // 同步更新 model 中的搜索参数
+                    presenter.updateSearchParams(updatedParams)
                 }
                 showDestinationSelect = false
             },
@@ -177,14 +187,16 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
 
         dateView.TrainDateSelectTabScreen(
             onDateSelected = { date ->
+                android.util.Log.d("TrainTicketBooking", "Date selected: $date")
                 departureDate = date
                 // 更新trainData中的出发日期
                 trainData?.let { data ->
-                    trainData = data.copy(
-                        searchParams = data.searchParams.copy(
-                            departureDate = date
-                        )
+                    val updatedParams = data.searchParams.copy(
+                        departureDate = date
                     )
+                    trainData = data.copy(searchParams = updatedParams)
+                    // 同步更新 model 中的搜索参数
+                    presenter.updateSearchParams(updatedParams)
                 }
                 showDateSelect = false
             },
@@ -197,9 +209,12 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
 
     if (showTrainList) {
         // 显示火车票列表页面
-        val trainListView = remember { TrainMateListTabView(context) }
+        // 基于查询参数来remember，确保参数变化时重新创建view
+        val trainListView = remember(departureCity, arrivalCity, departureDate) {
+            TrainMateListTabView(context)
+        }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(departureCity, arrivalCity, departureDate) {
             trainListView.initialize(departureCity, arrivalCity, departureDate)
         }
 

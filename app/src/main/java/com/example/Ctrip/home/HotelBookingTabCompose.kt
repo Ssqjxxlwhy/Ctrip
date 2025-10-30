@@ -20,10 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
+import android.content.res.Configuration
 import com.example.Ctrip.utils.DateUtils
 
 @Composable
@@ -39,6 +47,7 @@ fun HotelBookingTabScreen(
     var showCitySelect by remember { mutableStateOf(false) }
     var showDateSelect by remember { mutableStateOf(false) }
     var showRoomGuestSelect by remember { mutableStateOf(false) }
+    var showHotelSearch by remember { mutableStateOf(false) }
     
     val view = object : HotelBookingTabContract.View {
         override fun showHotelData(data: HotelBookingData) {
@@ -101,7 +110,27 @@ fun HotelBookingTabScreen(
         }
     }
     
-    if (showCitySelect) {
+    if (showHotelSearch) {
+        HotelSearchDialog(
+            onHotelSelected = { hotelName ->
+                hotelData?.let { data ->
+                    val listSearchParams = HotelListSearchParams(
+                        city = data.searchParams.city,
+                        checkInDate = data.searchParams.checkInDate,
+                        checkOutDate = data.searchParams.checkOutDate,
+                        roomCount = data.searchParams.roomCount,
+                        guestCount = data.searchParams.adultCount + data.searchParams.childCount,
+                        searchQuery = hotelName
+                    )
+                    onHotelListRequested(listSearchParams)
+                }
+                showHotelSearch = false
+            },
+            onDismiss = {
+                showHotelSearch = false
+            }
+        )
+    } else if (showCitySelect) {
         CitySelectTabScreen(
             onCitySelected = { city ->
                 // Update hotel data with selected city
@@ -150,7 +179,11 @@ fun HotelBookingTabScreen(
         }
         
         item {
-            SearchParametersSection(hotelData?.searchParams, presenter)
+            SearchParametersSection(
+                searchParams = hotelData?.searchParams,
+                presenter = presenter,
+                onSearchBarClicked = { showHotelSearch = true }
+            )
         }
         
         item {
@@ -326,7 +359,11 @@ private fun CategoryTab(category: HotelCategory, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SearchParametersSection(searchParams: HotelSearchParams?, presenter: HotelBookingTabPresenter) {
+private fun SearchParametersSection(
+    searchParams: HotelSearchParams?,
+    presenter: HotelBookingTabPresenter,
+    onSearchBarClicked: () -> Unit = {}
+) {
     searchParams?.let { params ->
         Card(
             modifier = Modifier
@@ -369,6 +406,7 @@ private fun SearchParametersSection(searchParams: HotelSearchParams?, presenter:
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable { onSearchBarClicked() }
                         .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -426,27 +464,6 @@ private fun SearchParametersSection(searchParams: HotelSearchParams?, presenter:
                         Icons.Default.KeyboardArrowDown,
                         contentDescription = "选择房间和入住人数",
                         modifier = Modifier.size(20.dp)
-                    )
-                }
-                
-                Divider(color = Color(0xFFE0E0E0))
-                
-                // Price and Star Level
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "💰",
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "价格/星级",
-                        color = Color(0xFF999999),
-                        fontSize = 16.sp
                     )
                 }
             }
@@ -702,6 +719,100 @@ private fun BottomNavItem(title: String, icon: String) {
             textAlign = TextAlign.Center
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HotelSearchDialog(
+    onHotelSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var searchText by remember { mutableStateOf("") }
+
+    // 设置简体中文locale，提示输入法使用简体中文拼音
+    val configuration = LocalConfiguration.current
+    val simplifiedChineseConfig = remember {
+        Configuration(configuration).apply {
+            setLocale(Locale.SIMPLIFIED_CHINESE)
+        }
+    }
+
+    CompositionLocalProvider(LocalConfiguration provides simplifiedChineseConfig) {
+        HotelSearchDialogContent(
+            searchText = searchText,
+            onSearchTextChange = { searchText = it },
+            onHotelSelected = onHotelSelected,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HotelSearchDialogContent(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    onHotelSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "搜索酒店",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+        },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = onSearchTextChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("请输入酒店名称") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            if (searchText.isNotBlank()) {
+                                onHotelSelected(searchText.trim())
+                            }
+                        }
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "输入酒店名称进行精确搜索",
+                    fontSize = 12.sp,
+                    color = Color(0xFF999999)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (searchText.isNotBlank()) {
+                        onHotelSelected(searchText.trim())
+                    }
+                },
+                enabled = searchText.isNotBlank()
+            ) {
+                Text(
+                    "搜索",
+                    color = if (searchText.isNotBlank()) Color(0xFF4A90E2) else Color(0xFFCCCCCC)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消", color = Color(0xFF666666))
+            }
+        }
+    )
 }
 
 private fun formatDateRange(checkIn: LocalDate, checkOut: LocalDate): String {

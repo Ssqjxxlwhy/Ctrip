@@ -25,23 +25,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 class PaymentTabView(private val context: Context) : PaymentTabContract.View {
-    
+
     private lateinit var presenter: PaymentTabContract.Presenter
     private var paymentData by mutableStateOf<PaymentData?>(null)
     private var isLoading by mutableStateOf(false)
-    
+    private var confirmationData: InfoConfirmationData? = null
+    private var paymentSuccessCallback: ((PaymentData, InfoConfirmationData) -> Unit)? = null
+
     fun initialize(confirmationData: InfoConfirmationData) {
+        this.confirmationData = confirmationData
         val model = PaymentTabModelImpl(context)
         presenter = PaymentTabPresenter(model)
         presenter.attachView(this)
         presenter.loadPaymentData(confirmationData)
     }
-    
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun PaymentTabScreen(
-        onBackPressed: () -> Unit = {}
+        onBackPressed: () -> Unit = {},
+        onNavigateToPaymentSuccess: (PaymentData, InfoConfirmationData) -> Unit = { _, _ -> }
     ) {
+        // 保存回调到成员变量
+        LaunchedEffect(Unit) {
+            paymentSuccessCallback = onNavigateToPaymentSuccess
+        }
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -512,13 +520,14 @@ class PaymentTabView(private val context: Context) : PaymentTabContract.View {
     }
     
     override fun onPaymentConfirmed() {
-        // Show success message
-        Toast.makeText(context, "支付成功！", Toast.LENGTH_LONG).show()
-        
-        // Navigate back to previous screen after a short delay
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            navigateBack()
-        }, 1500)
+        // Navigate to payment success page
+        paymentData?.let { payment ->
+            confirmationData?.let { confirmation ->
+                paymentSuccessCallback?.invoke(payment, confirmation) ?: run {
+                    Toast.makeText(context, "支付成功！", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
     
     override fun onBackPressed() {

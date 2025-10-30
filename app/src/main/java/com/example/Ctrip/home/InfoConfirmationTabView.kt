@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.sp
 import com.example.Ctrip.model.*
 
 class InfoConfirmationTabView(private val context: Context) : InfoConfirmationTabContract.View {
-    
+
     private lateinit var presenter: InfoConfirmationTabContract.Presenter
     private var confirmationData by mutableStateOf<InfoConfirmationData?>(null)
     private var isLoading by mutableStateOf(false)
     private var showPaymentScreen by mutableStateOf(false)
     private var paymentTabView: PaymentTabView? = null
+    private var showHotelPaymentSuccess by mutableStateOf(false)
+    private var hotelPaymentSuccessTabView: HotelPaymentSuccessTabView? = null
     
     fun initialize(roomType: RoomType, searchParams: HotelListSearchParams) {
         val model = InfoConfirmationTabModelImpl(context)
@@ -48,12 +50,37 @@ class InfoConfirmationTabView(private val context: Context) : InfoConfirmationTa
         onBackPressed: () -> Unit = {}
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (showPaymentScreen && paymentTabView != null) {
+            if (showHotelPaymentSuccess && hotelPaymentSuccessTabView != null) {
+                // Show Hotel Payment Success Screen
+                hotelPaymentSuccessTabView?.HotelPaymentSuccessTabScreen(
+                    onClose = {
+                        showHotelPaymentSuccess = false
+                        showPaymentScreen = false
+                        paymentTabView = null
+                        hotelPaymentSuccessTabView = null
+                    },
+                    onContinueShopping = {
+                        // Return to home
+                        showHotelPaymentSuccess = false
+                        showPaymentScreen = false
+                        paymentTabView = null
+                        hotelPaymentSuccessTabView = null
+                        onBackPressed()
+                    }
+                )
+            } else if (showPaymentScreen && paymentTabView != null) {
                 // Show Payment Screen
                 paymentTabView?.PaymentTabScreen(
                     onBackPressed = {
                         showPaymentScreen = false
                         paymentTabView = null
+                    },
+                    onNavigateToPaymentSuccess = { paymentData, confirmData ->
+                        // Navigate to payment success
+                        val successTabView = HotelPaymentSuccessTabView(context)
+                        successTabView.initialize(paymentData, confirmData)
+                        hotelPaymentSuccessTabView = successTabView
+                        showHotelPaymentSuccess = true
                     }
                 )
             } else {

@@ -38,7 +38,11 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
     private var arrivalCity by mutableStateOf("")
     private var selectedDate by mutableStateOf(LocalDate.now())
 
+    private var showTrainDetail by mutableStateOf(false)
+    private var selectedTrainId by mutableStateOf("")
+
     fun initialize(departureCity: String, arrivalCity: String, departureDate: LocalDate) {
+        android.util.Log.d("TrainMateListTabView", "initialize called with: departureCity=$departureCity, arrivalCity=$arrivalCity, departureDate=$departureDate")
         this.departureCity = departureCity
         this.arrivalCity = arrivalCity
         this.selectedDate = departureDate
@@ -53,6 +57,21 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
     fun TrainMateListTabScreen(
         onClose: () -> Unit = {}
     ) {
+        // 如果显示详情页，则渲染详情页
+        if (showTrainDetail) {
+            val detailView = remember { TrainDetailTabView(context) }
+            LaunchedEffect(selectedTrainId) {
+                detailView.initialize(selectedTrainId)
+            }
+            detailView.TrainDetailTabScreen(
+                onClose = {
+                    showTrainDetail = false
+                    selectedTrainId = ""
+                }
+            )
+            return
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -714,7 +733,8 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
     }
 
     override fun navigateToTrainDetail(trainId: String) {
-        Toast.makeText(context, "查看车次详情: $trainId", Toast.LENGTH_SHORT).show()
+        selectedTrainId = trainId
+        showTrainDetail = true
     }
 
     override fun showFilterDialog() {
