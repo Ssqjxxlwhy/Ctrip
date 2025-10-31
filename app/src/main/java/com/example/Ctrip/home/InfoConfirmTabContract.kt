@@ -67,7 +67,9 @@ data class InfoConfirmData(
     val availableSeats: List<SeatSelectionInfo>, // 可选座位
     val newCustomerDiscount: Int = 10,  // 新客优惠金额
     val points: Int = 2880,             // 可得积分
-    val pointsValue: Double = 28.8      // 积分价值
+    val pointsValue: Double = 28.8,     // 积分价值
+    val isStudentTicket: Boolean = false, // 是否学生票
+    val originalPrice: Int = 0          // 原价（用于显示学生票折扣对比）
 )
 
 interface InfoConfirmTabContract {

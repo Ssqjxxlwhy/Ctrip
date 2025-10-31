@@ -36,11 +36,13 @@ class TrainDetailTabView(private val context: Context) : TrainDetailTabContract.
     private var currentTrainId by mutableStateOf("")
     private var currentConfirmData by mutableStateOf<InfoConfirmData?>(null)
     private var currentPaymentData by mutableStateOf<TicketPaymentTabContract.PaymentData?>(null)
+    private var isStudentTicket by mutableStateOf(false)
 
-    fun initialize(trainId: String) {
+    fun initialize(trainId: String, isStudentTicket: Boolean = false) {
         currentTrainId = trainId
+        this.isStudentTicket = isStudentTicket
         val model = TrainDetailTabModel(context)
-        presenter = TrainDetailTabPresenter(model)
+        presenter = TrainDetailTabPresenter(model, isStudentTicket)
         presenter.attachView(this)
         presenter.loadTrainDetail(trainId)
     }
@@ -98,7 +100,8 @@ class TrainDetailTabView(private val context: Context) : TrainDetailTabContract.
                 infoConfirmView.initialize(
                     currentTrainId,
                     selectedTicketOption!!,
-                    selectedSeatType
+                    selectedSeatType,
+                    isStudentTicket
                 )
             }
             infoConfirmView.InfoConfirmTabScreen(

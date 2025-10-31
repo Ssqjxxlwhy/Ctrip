@@ -37,15 +37,17 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
     private var departureCity by mutableStateOf("")
     private var arrivalCity by mutableStateOf("")
     private var selectedDate by mutableStateOf(LocalDate.now())
+    private var isStudentTicket by mutableStateOf(false)
 
     private var showTrainDetail by mutableStateOf(false)
     private var selectedTrainId by mutableStateOf("")
 
-    fun initialize(departureCity: String, arrivalCity: String, departureDate: LocalDate) {
-        android.util.Log.d("TrainMateListTabView", "initialize called with: departureCity=$departureCity, arrivalCity=$arrivalCity, departureDate=$departureDate")
+    fun initialize(departureCity: String, arrivalCity: String, departureDate: LocalDate, isStudentTicket: Boolean = false) {
+        android.util.Log.d("TrainMateListTabView", "initialize called with: departureCity=$departureCity, arrivalCity=$arrivalCity, departureDate=$departureDate, isStudentTicket=$isStudentTicket")
         this.departureCity = departureCity
         this.arrivalCity = arrivalCity
         this.selectedDate = departureDate
+        this.isStudentTicket = isStudentTicket
 
         val model = TrainMateListTabModel(context)
         presenter = TrainMateListTabPresenter(model)
@@ -61,7 +63,7 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
         if (showTrainDetail) {
             val detailView = remember { TrainDetailTabView(context) }
             LaunchedEffect(selectedTrainId) {
-                detailView.initialize(selectedTrainId)
+                detailView.initialize(selectedTrainId, isStudentTicket)
             }
             detailView.TrainDetailTabScreen(
                 onClose = {

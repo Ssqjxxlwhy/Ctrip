@@ -5,7 +5,10 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import java.io.InputStreamReader
 
-class InfoConfirmTabModel(private val context: Context) : InfoConfirmTabContract.Model {
+class InfoConfirmTabModel(
+    private val context: Context,
+    private val isStudentTicket: Boolean = false
+) : InfoConfirmTabContract.Model {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("train_order_actions", Context.MODE_PRIVATE)
@@ -19,6 +22,14 @@ class InfoConfirmTabModel(private val context: Context) : InfoConfirmTabContract
         // 从trains_list.json加载火车信息
         val train = loadTrainById(trainId) ?: return null
 
+        // 计算票价：如果是学生票，则打75折
+        val originalPrice = train.prices[selectedSeatType]?.toInt() ?: 0
+        val finalPrice = if (isStudentTicket) {
+            (originalPrice * 0.75).toInt()
+        } else {
+            originalPrice
+        }
+
         return InfoConfirmData(
             trainNumber = train.trainNumber,
             departureCity = train.departureCity,
@@ -30,7 +41,7 @@ class InfoConfirmTabModel(private val context: Context) : InfoConfirmTabContract
             arrivalTime = train.arrivalTime,
             duration = train.duration,
             seatType = selectedSeatType,
-            ticketPrice = train.prices[selectedSeatType]?.toInt() ?: 0,
+            ticketPrice = finalPrice,
             insuranceName = parseInsuranceName(ticketOption.insurancePrice),
             insurancePrice = parseInsurancePrice(ticketOption.insurancePrice),
             currentUser = getCurrentUser(),
@@ -38,7 +49,9 @@ class InfoConfirmTabModel(private val context: Context) : InfoConfirmTabContract
             availableSeats = getSeatOptions(),
             newCustomerDiscount = 10,
             points = 2880,
-            pointsValue = 28.8
+            pointsValue = 28.8,
+            isStudentTicket = isStudentTicket,
+            originalPrice = originalPrice
         )
     }
 

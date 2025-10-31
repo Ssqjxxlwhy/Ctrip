@@ -67,7 +67,7 @@ interface TrainDetailTabContract {
 
     interface Model {
         fun getTrainDetail(trainId: String): TrainDetailData?
-        fun getSeatTypes(trainId: String, seatType: String): List<SeatType>
-        fun getTicketOptions(trainId: String, seatType: String): List<TrainTicketOption>
+        fun getSeatTypes(trainId: String, seatType: String, isStudentTicket: Boolean = false): List<SeatType>
+        fun getTicketOptions(trainId: String, seatType: String, isStudentTicket: Boolean = false): List<TrainTicketOption>
     }
 }

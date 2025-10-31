@@ -123,7 +123,9 @@ fun FlightBookingTabScreen(
             val departureCity = selectedDepartureCity?.cityName ?: "上海"
             val arrivalCity = selectedDestinationCity?.cityName ?: "北京"
             val searchDate = selectedFlightDate ?: LocalDate.now().plusDays(1)
-            flightListView.initialize(departureCity, arrivalCity, searchDate)
+            // 获取选中的舱位类型
+            val selectedCabin = flightData?.cabinTypes?.find { it.isSelected }?.id ?: "economy"
+            flightListView.initialize(departureCity, arrivalCity, searchDate, selectedCabin)
         }
         flightListView.FlightListTabScreen(
             onFlightSelected = { flightId ->

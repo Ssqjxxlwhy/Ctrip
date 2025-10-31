@@ -34,9 +34,10 @@ class InfoConfirmTabView(private val context: Context) : InfoConfirmTabContract.
     fun initialize(
         trainId: String,
         ticketOption: TrainTicketOption,
-        selectedSeatType: String
+        selectedSeatType: String,
+        isStudentTicket: Boolean = false
     ) {
-        val model = InfoConfirmTabModel(context)
+        val model = InfoConfirmTabModel(context, isStudentTicket)
         presenter = InfoConfirmTabPresenter(model)
         presenter.attachView(this)
         presenter.loadConfirmData(trainId, ticketOption, selectedSeatType)
@@ -211,13 +212,59 @@ class InfoConfirmTabView(private val context: Context) : InfoConfirmTabContract.
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Text(
-                        text = "${data.seatType}¥${data.ticketPrice}  ${data.insuranceName} ¥${data.insurancePrice}x1",
-                        fontSize = 13.sp,
-                        color = Color(0xFF666666)
-                    )
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = data.seatType,
+                                fontSize = 13.sp,
+                                color = Color(0xFF666666)
+                            )
+
+                            // 学生票标识
+                            if (data.isStudentTicket) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color(0xFFFF9800), RoundedCornerShape(3.dp))
+                                        .padding(horizontal = 4.dp, vertical = 1.dp)
+                                ) {
+                                    Text(
+                                        text = "学生票",
+                                        fontSize = 10.sp,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "¥${data.ticketPrice}",
+                                fontSize = 13.sp,
+                                color = if (data.isStudentTicket) Color(0xFFFF5722) else Color(0xFF666666),
+                                fontWeight = if (data.isStudentTicket) FontWeight.Medium else FontWeight.Normal
+                            )
+                        }
+
+                        // 学生票折扣信息
+                        if (data.isStudentTicket && data.originalPrice > 0) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "7.5折优惠，原价¥${data.originalPrice}",
+                                fontSize = 11.sp,
+                                color = Color(0xFF999999)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${data.insuranceName} ¥${data.insurancePrice}x1",
+                            fontSize = 13.sp,
+                            color = Color(0xFF666666)
+                        )
+                    }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

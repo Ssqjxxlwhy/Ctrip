@@ -214,8 +214,10 @@ fun TrainTicketBookingTabScreen(onClose: () -> Unit = {}) {
             TrainMateListTabView(context)
         }
 
-        LaunchedEffect(departureCity, arrivalCity, departureDate) {
-            trainListView.initialize(departureCity, arrivalCity, departureDate)
+        val isStudentTicket = trainData?.searchParams?.isStudentTicket ?: false
+
+        LaunchedEffect(departureCity, arrivalCity, departureDate, isStudentTicket) {
+            trainListView.initialize(departureCity, arrivalCity, departureDate, isStudentTicket)
         }
 
         trainListView.TrainMateListTabScreen(
@@ -657,14 +659,13 @@ private fun TrainSearchSection(searchParams: TrainSearchParams?, presenter: Trai
                     ) {
                         RadioButton(
                             selected = params.isHighSpeedTrain,
-                            onClick = { presenter.onHighSpeedTrainToggled(!params.isHighSpeedTrain) }
+                            onClick = null,  // 禁用点击
+                            enabled = false  // 设置为不可用
                         )
                         Text(
                             text = "高铁动车",
                             fontSize = 14.sp,
-                            modifier = Modifier.clickable { 
-                                presenter.onHighSpeedTrainToggled(!params.isHighSpeedTrain) 
-                            }
+                            color = Color(0xFF999999)  // 灰色显示表示禁用
                         )
                     }
                 }

@@ -1,6 +1,9 @@
 package com.example.Ctrip.home
 
-class TrainDetailTabPresenter(private val model: TrainDetailTabContract.Model) : TrainDetailTabContract.Presenter {
+class TrainDetailTabPresenter(
+    private val model: TrainDetailTabContract.Model,
+    private val isStudentTicket: Boolean = false
+) : TrainDetailTabContract.Presenter {
 
     private var view: TrainDetailTabContract.View? = null
     private var currentTrainId: String = ""
@@ -41,8 +44,8 @@ class TrainDetailTabPresenter(private val model: TrainDetailTabContract.Model) :
         view?.showLoading()
 
         try {
-            val seatTypes = model.getSeatTypes(currentTrainId, seatType)
-            val ticketOptions = model.getTicketOptions(currentTrainId, seatType)
+            val seatTypes = model.getSeatTypes(currentTrainId, seatType, isStudentTicket)
+            val ticketOptions = model.getTicketOptions(currentTrainId, seatType, isStudentTicket)
 
             trainDetailData?.let { data ->
                 val updatedData = data.copy(

@@ -42,7 +42,8 @@
       "Read(//d/**)",
       "Bash(python:*)",
       "Bash(set JAVA_HOME=D:AndroidStudiojbr)",
-      "Bash(\"D:\\AndroidStudio\\jbr\\bin\\java.exe\" -version)"
+      "Bash(\"D:\\AndroidStudio\\jbr\\bin\\java.exe\" -version)",
+      "Bash(\"D:\\AndroidDevelop\\android_template\\app\\src\\main\\java\\com\\example\\Ctrip\\home\\SearchResultTabScreen.kt\")"
     ],
     "deny": []
   }

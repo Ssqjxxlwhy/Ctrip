@@ -46,8 +46,8 @@ class FlightBookingTabModelImpl(private val context: Context) : FlightBookingTab
                 ),
                 searchParams = currentSearchParams,
                 cabinTypes = listOf(
-                    CabinType("economy", "经济舱", true),
-                    CabinType("business", "公务/头等舱", false)
+                    CabinType("economy", "经济舱", currentSearchParams.selectedCabin == "economy"),
+                    CabinType("business", "公务/头等舱", currentSearchParams.selectedCabin == "business")
                 ),
                 serviceFeatures = listOf(
                     ServiceFeature("low_price", "搜全国低价", "🌏"),

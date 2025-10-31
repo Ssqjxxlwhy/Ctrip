@@ -70,7 +70,8 @@ data class FlightItem(
     val hasWifi: Boolean = false,
     val isFavorite: Boolean = false,
     val airlineIcon: String = "✈️",
-    val priceColor: String = "#2196F3"
+    val priceColor: String = "#2196F3",
+    val cabinClass: String = "economy"  // "economy" 经济舱, "business" 公务/头等舱
 )
 
 data class SortOption(
@@ -103,7 +104,7 @@ interface FlightListTabContract {
     interface Presenter {
         fun attachView(view: View)
         fun detachView()
-        fun loadFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate)
+        fun loadFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String = "economy")
         fun onFlightItemClicked(flightId: String)
         fun onDateOptionClicked(dateId: String)
         fun onFilterTagClicked(filterId: String)
@@ -118,9 +119,9 @@ interface FlightListTabContract {
     }
     
     interface Model {
-        fun getFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate): FlightListData?
+        fun getFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String = "economy"): FlightListData?
         fun getDateOptions(baseDate: LocalDate): List<DateOption>
-        fun getFlightList(departureCity: String, arrivalCity: String, date: LocalDate): List<FlightItem>
+        fun getFlightList(departureCity: String, arrivalCity: String, date: LocalDate, cabinClass: String = "economy"): List<FlightItem>
         fun getFilterTags(): List<FlightFilterTag>
         fun getSortOptions(): List<SortOption>
         fun applyFilters(flights: List<FlightItem>, activeFilters: List<String>): List<FlightItem>

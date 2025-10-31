@@ -74,8 +74,8 @@ class OrderFormTabModel(private val context: Context) : OrderFormTabContract.Mod
     
     private fun getPriceBreakdownFromTicketOption(ticketOptionId: String): FlightPriceBreakdown {
         // 从票价选项ID提取价格信息
-        // ID格式: economy_405 或 economy_405_2
-        // 第二个部分(parts[1])是成人票价
+        // ID格式: economy_405 或 business_1215 或 economy_405_2
+        // 第一个部分是舱位类型，第二个部分是成人票价
         val adultPrice = try {
             val parts = ticketOptionId.split("_")
             if (parts.size >= 2) {
@@ -90,9 +90,13 @@ class OrderFormTabModel(private val context: Context) : OrderFormTabContract.Mod
             405
         }
 
-        // 固定的服务费和税费
-        val servicePrice = 48
-        val taxPrice = 70
+        // 判断是否为公务舱，公务舱的服务费和税费更高
+        val isBusinessClass = ticketOptionId.startsWith("business")
+
+        // 根据舱位类型调整服务费和税费
+        val servicePrice = if (isBusinessClass) 48 else 48
+        val taxPrice = if (isBusinessClass) 150 else 70
+
         // 计算总价 = 成人票价 + 服务费 + 税费
         val totalPrice = adultPrice + servicePrice + taxPrice
 

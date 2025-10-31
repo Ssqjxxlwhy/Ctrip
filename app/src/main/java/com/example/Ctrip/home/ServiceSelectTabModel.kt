@@ -19,10 +19,18 @@ class ServiceSelectTabModel(private val context: Context) : ServiceSelectTabCont
     }
 
     private fun generateServiceSelectData(orderFormData: OrderFormData): ServiceSelectData {
+        // 根据价格和税费判断舱位类型
+        // 公务舱的税费为150，经济舱为70
+        val cabinTypeName = if (orderFormData.priceBreakdown.taxPrice.contains("150")) {
+            "公务/头等舱"
+        } else {
+            "经济舱"
+        }
+
         val flightInfo = ServiceFlightInfo(
             route = orderFormData.flightInfo.route,
             date = orderFormData.flightInfo.date,
-            cabinType = "经济舱"
+            cabinType = cabinTypeName
         )
 
         val promotionBanner = ServicePromotionBanner(
@@ -34,7 +42,7 @@ class ServiceSelectTabModel(private val context: Context) : ServiceSelectTabCont
 
         val paymentInfo = PaymentInfo(
             totalPrice = orderFormData.priceBreakdown.totalPrice,
-            cabinType = "经济舱",
+            cabinType = cabinTypeName,
             hasDetails = true,
             receiptInfo = ReceiptInfo(
                 title = "支付完成后可开具报销凭证，安心购票",

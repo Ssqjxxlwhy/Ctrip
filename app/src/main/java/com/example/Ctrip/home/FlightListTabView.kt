@@ -32,13 +32,13 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     private var departureCity by mutableStateOf("")
     private var arrivalCity by mutableStateOf("")
     
-    fun initialize(departureCity: String, arrivalCity: String, selectedDate: LocalDate) {
+    fun initialize(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String = "economy") {
         this.departureCity = departureCity
         this.arrivalCity = arrivalCity
         val model = FlightListTabModel(context)
         presenter = FlightListTabPresenter(model)
         presenter.attachView(this)
-        presenter.loadFlightListData(departureCity, arrivalCity, selectedDate)
+        presenter.loadFlightListData(departureCity, arrivalCity, selectedDate, cabinClass)
     }
     
     @OptIn(ExperimentalMaterial3Api::class)

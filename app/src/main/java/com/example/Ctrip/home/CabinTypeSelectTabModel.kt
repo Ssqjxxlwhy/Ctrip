@@ -21,13 +21,20 @@ class CabinTypeSelectTabModel(private val context: Context) : CabinTypeSelectTab
     }
     
     private fun generateCabinTypeData(flightId: String): CabinTypeSelectData {
-        val flightInfo = getFlightInfoFromId(flightId)
+        // 先获取航班数据
+        val flightItem = findFlightItemById(flightId)
+        val flightInfo = if (flightItem != null) {
+            convertFlightItemToBasicInfo(flightItem, flightId)
+        } else {
+            getDefaultFlightInfo()
+        }
+
         return CabinTypeSelectData(
             flightInfo = flightInfo,
             travelTip = getTravelTip(flightInfo),
             membershipBenefit = getMembershipBenefit(),
             cabinTypes = getCabinTypes(),
-            ticketOptions = getTicketOptions(flightInfo)
+            ticketOptions = getTicketOptions(flightItem)  // 直接传入FlightItem而不是FlightBasicInfo
         )
     }
     
@@ -46,45 +53,49 @@ class CabinTypeSelectTabModel(private val context: Context) : CabinTypeSelectTab
         // ID格式: SHA_BJS_2024-10-29_1 (出发地_目的地_日期_序号)
         val parts = flightId.split("_")
         if (parts.size < 4) return null
-        
+
         val departureCityCode = parts[0]
-        val arrivalCityCode = parts[1] 
+        val arrivalCityCode = parts[1]
         val dateStr = parts[2]
         val flightNumber = parts[3]
-        
+
         // 转换城市代码为城市名
         val departureCity = when(departureCityCode) {
             "SHA" -> "上海"
-            "BJS" -> "北京" 
+            "BJS" -> "北京"
             "CAN" -> "广州"
             "GZ" -> "广州"
             "SZ" -> "深圳"
+            "SZX" -> "深圳"
             "CTU" -> "成都"
             else -> "上海"
         }
-        
+
         val arrivalCity = when(arrivalCityCode) {
             "SHA" -> "上海"
             "BJS" -> "北京"
-            "CAN" -> "广州" 
+            "CAN" -> "广州"
             "GZ" -> "广州"
             "SZ" -> "深圳"
+            "SZX" -> "深圳"
             "CTU" -> "成都"
             else -> "北京"
         }
-        
+
         // 解析日期
         val date = try {
             LocalDate.parse(dateStr)
         } catch (e: Exception) {
             LocalDate.now().plusDays(1)
         }
-        
-        // 获取航班列表
-        val flights = flightListModel.getFlightList(departureCity, arrivalCity, date)
-        
+
+        // 获取所有航班列表（包括经济舱和公务舱）
+        val economyFlights = flightListModel.getFlightList(departureCity, arrivalCity, date, "economy")
+        val businessFlights = flightListModel.getFlightList(departureCity, arrivalCity, date, "business")
+        val allFlights = economyFlights + businessFlights
+
         // 查找匹配的航班
-        return flights.find { it.id == flightId }
+        return allFlights.find { it.id == flightId }
     }
     
     private fun convertFlightItemToBasicInfo(flightItem: FlightItem, flightId: String): FlightBasicInfo {
@@ -153,14 +164,17 @@ class CabinTypeSelectTabModel(private val context: Context) : CabinTypeSelectTab
         // 根据航线确定查询的城市
         val cities = route.split(" — ")
         if (cities.size != 2) return null
-        
+
         val departureCity = cities[0]
         val arrivalCity = cities[1]
         val date = LocalDate.now().plusDays(1) // 默认明天的航班
-        
-        // 获取航班列表并查找匹配的航班号
-        val flights = flightListModel.getFlightList(departureCity, arrivalCity, date)
-        return flights.find { it.flightNumber == flightNumber }
+
+        // 获取所有舱位的航班列表并查找匹配的航班号
+        val economyFlights = flightListModel.getFlightList(departureCity, arrivalCity, date, "economy")
+        val businessFlights = flightListModel.getFlightList(departureCity, arrivalCity, date, "business")
+        val allFlights = economyFlights + businessFlights
+
+        return allFlights.find { it.flightNumber == flightNumber }
     }
     
     
@@ -211,68 +225,75 @@ class CabinTypeSelectTabModel(private val context: Context) : CabinTypeSelectTab
             CabinTypeOption(
                 id = "business",
                 name = "公务/头等舱",
-                priceFrom = "¥1252起",
+                priceFrom = "¥1176起",
                 description = "享专属定制服务"
             )
         )
     }
     
-    private fun getTicketOptions(flightInfo: FlightBasicInfo): List<TicketOption> {
+    private fun getTicketOptions(flightItem: FlightItem?): List<TicketOption> {
         // 从实际的航班数据中获取价格信息
-        val flightItem = findFlightItemByFlightNumber(flightInfo.flightNumber, flightInfo.route)
         val basePrice = if (flightItem != null) {
             // 提取价格数字
             flightItem.price.replace("¥", "").toIntOrNull() ?: 405
         } else {
             405
         }
+
+        // 判断舱位类型，调整显示文案
+        val cabinClass = flightItem?.cabinClass ?: "economy"
+        val isBusinessClass = cabinClass == "business"
+        val discountText = if (isBusinessClass) "公务舱特惠" else "经济舱2.3折"
+        val cabinPrefix = if (isBusinessClass) "business" else "economy"
+        val airlineName = flightItem?.airline ?: "航空公司"
+
         return listOf(
             TicketOption(
-                id = "economy_${basePrice}",
+                id = "${cabinPrefix}_${basePrice}",
                 price = "¥$basePrice",
-                discount = "经济舱2.3折",
-                baggageInfo = "托运行李额20KG",
-                refundInfo = "退票¥${basePrice - 121}起",
-                changeInfo = "改签¥${basePrice - 202}起",
+                discount = discountText,
+                baggageInfo = if (isBusinessClass) "托运行李额40KG" else "托运行李额20KG",
+                refundInfo = "退票¥${(basePrice * 0.7).toInt()}起",
+                changeInfo = "改签¥${(basePrice * 0.5).toInt()}起",
                 pointsInfo = "积分最高可抵¥${basePrice - 5}",
-                benefits = listOf("赠接送机最高8折券"),
-                restrictions = "限使用身份证，且${flightInfo.airline}会员，且携程实名认证用户的乘客可订",
+                benefits = if (isBusinessClass) listOf("贵宾休息室", "优先登机", "豪华餐食") else listOf("赠接送机最高8折券"),
+                restrictions = "限使用身份证，且${airlineName}会员，且携程实名认证用户的乘客可订",
                 insurancePrice = "+¥48全能保障",
                 buttonText = "订",
                 buttonType = TicketButtonType.BOOK
             ),
             TicketOption(
-                id = "economy_${basePrice}_2",
+                id = "${cabinPrefix}_${basePrice}_2",
                 price = "¥$basePrice",
-                discount = "经济舱2.3折",
-                baggageInfo = "托运行李额20KG",
-                refundInfo = "退票¥${basePrice - 121}起",
-                changeInfo = "改签¥${basePrice - 202}起",
+                discount = discountText,
+                baggageInfo = if (isBusinessClass) "托运行李额40KG" else "托运行李额20KG",
+                refundInfo = "退票¥${(basePrice * 0.7).toInt()}起",
+                changeInfo = "改签¥${(basePrice * 0.5).toInt()}起",
                 pointsInfo = "积分最高可抵¥${basePrice - 5}",
-                benefits = listOf("赠接送机最高8折券"),
-                restrictions = "限使用身份证，且${flightInfo.airline}会员，且携程实名认证用户的乘客可订",
+                benefits = if (isBusinessClass) listOf("贵宾休息室", "优先登机") else listOf("赠接送机最高8折券"),
+                restrictions = "限使用身份证，且${airlineName}会员，且携程实名认证用户的乘客可订",
                 buttonText = "选购",
                 buttonType = TicketButtonType.SELECT
             ),
             TicketOption(
-                id = "economy_${basePrice + 5}",
+                id = "${cabinPrefix}_${basePrice + 5}",
                 price = "¥${basePrice + 5}",
-                discount = "经济舱2.3折",
-                baggageInfo = "托运行李额20KG",
-                refundInfo = "退票¥${basePrice - 118}起",
-                changeInfo = "改签¥${basePrice - 200}起",
-                benefits = listOf("额外11倍携程积分", "赠¥50接送机券"),
+                discount = discountText,
+                baggageInfo = if (isBusinessClass) "托运行李额40KG" else "托运行李额20KG",
+                refundInfo = "退票¥${(basePrice * 0.71).toInt()}起",
+                changeInfo = "改签¥${(basePrice * 0.51).toInt()}起",
+                benefits = if (isBusinessClass) listOf("贵宾休息室", "优先登机", "豪华餐食", "平躺座椅") else listOf("额外11倍携程积分", "赠¥50接送机券"),
                 buttonText = "选购",
                 buttonType = TicketButtonType.SELECT
             ),
             TicketOption(
-                id = "economy_${basePrice - 13}",
+                id = "${cabinPrefix}_${basePrice - 13}",
                 price = "¥${basePrice - 13}",
-                discount = "经济舱2.2折",
-                baggageInfo = "托运行李额20KG",
-                refundInfo = "退票¥${basePrice - 131}起",
-                changeInfo = "改签¥${basePrice - 209}起",
-                specialTag = "人群特惠 青老年享",
+                discount = if (isBusinessClass) "公务舱早鸟价" else "经济舱2.2折",
+                baggageInfo = if (isBusinessClass) "托运行李额40KG" else "托运行李额20KG",
+                refundInfo = "退票¥${(basePrice * 0.68).toInt()}起",
+                changeInfo = "改签¥${(basePrice * 0.48).toInt()}起",
+                specialTag = if (isBusinessClass) "公务舱特惠" else "人群特惠 青老年享",
                 buttonText = "选购",
                 buttonType = TicketButtonType.SELECT
             )

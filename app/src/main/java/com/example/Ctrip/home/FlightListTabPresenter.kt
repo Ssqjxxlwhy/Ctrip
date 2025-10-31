@@ -5,11 +5,12 @@ import java.time.LocalDate
 class FlightListTabPresenter(
     private val model: FlightListTabContract.Model
 ) : FlightListTabContract.Presenter {
-    
+
     private var view: FlightListTabContract.View? = null
     private var currentData: FlightListData? = null
     private var activeFilters = mutableListOf<String>()
     private var currentSort = "sort_recommend"
+    private var currentCabinClass = "economy"  // 保存当前选择的舱位
     
     override fun attachView(view: FlightListTabContract.View) {
         this.view = view
@@ -19,11 +20,12 @@ class FlightListTabPresenter(
         this.view = null
     }
     
-    override fun loadFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate) {
+    override fun loadFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String) {
         view?.showLoading()
-        
+        currentCabinClass = cabinClass  // 保存舱位选择
+
         try {
-            val data = model.getFlightListData(departureCity, arrivalCity, selectedDate)
+            val data = model.getFlightListData(departureCity, arrivalCity, selectedDate, cabinClass)
             if (data != null) {
                 currentData = data
                 view?.hideLoading()
@@ -61,7 +63,8 @@ class FlightListTabPresenter(
                     val updatedFlights = model.getFlightList(
                         data.routeInfo.departureCity,
                         data.routeInfo.arrivalCity,
-                        selectedDate
+                        selectedDate,
+                        currentCabinClass  // 使用当前的舱位
                     )
                     
                     val updatedData = data.copy(
@@ -164,7 +167,7 @@ class FlightListTabPresenter(
     override fun refreshFlightList() {
         currentData?.let { data ->
             val selectedDate = data.dateOptions.find { it.isSelected }?.date ?: LocalDate.now().plusDays(1)
-            loadFlightListData(data.routeInfo.departureCity, data.routeInfo.arrivalCity, selectedDate)
+            loadFlightListData(data.routeInfo.departureCity, data.routeInfo.arrivalCity, selectedDate, currentCabinClass)
         }
     }
     

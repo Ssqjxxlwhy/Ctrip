@@ -13,7 +13,7 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
         context.getSharedPreferences("flight_list_data", Context.MODE_PRIVATE)
     private val gson = Gson()
     
-    override fun getFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate): FlightListData? {
+    override fun getFlightListData(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String): FlightListData? {
         return try {
             FlightListData(
                 routeInfo = RouteInfo(
@@ -24,7 +24,7 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 promotionBanner = getPromotionBanner(),
                 membershipInfo = getMembershipInfo(),
                 filterTags = getFilterTags(),
-                flightList = getFlightList(departureCity, arrivalCity, selectedDate),
+                flightList = getFlightList(departureCity, arrivalCity, selectedDate, cabinClass),
                 sortOptions = getSortOptions(),
                 selectedDateIndex = 1
             )
@@ -115,8 +115,10 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
         )
     }
     
-    override fun getFlightList(departureCity: String, arrivalCity: String, date: LocalDate): List<FlightItem> {
-        return generateFlightsForRoute(departureCity, arrivalCity, date)
+    override fun getFlightList(departureCity: String, arrivalCity: String, date: LocalDate, cabinClass: String): List<FlightItem> {
+        val allFlights = generateFlightsForRoute(departureCity, arrivalCity, date)
+        // 根据舱位筛选航班
+        return allFlights.filter { it.cabinClass == cabinClass }
     }
     
     private fun generateFlightsForRoute(departureCity: String, arrivalCity: String, date: LocalDate): List<FlightItem> {
@@ -210,7 +212,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 上海到北京航班
     private fun generateShanghaiToBeijingFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 330)
+        val businessPrice = dayPrice * 3 // 公务舱价格约为经济舱的3倍
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SHA_BJS_${date}_1",
                 departureTime = "07:20",
@@ -224,7 +228,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 15}",
                 discount = "限青老年票",
                 tags = listOf("随行送机最高63折", "含共享"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "SHA_BJS_${date}_2",
@@ -239,8 +244,10 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 50}",
                 discount = "限18-22周岁票",
                 tags = listOf("随行送机最高63折", "现金抵券第二季", "APP专享"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
+            // 公务/头等舱航班
             FlightItem(
                 id = "SHA_BJS_${date}_3",
                 departureTime = "08:10",
@@ -250,11 +257,12 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 airline = "南航",
                 flightNumber = "CZ8890",
                 aircraftType = "空客320(中)",
-                price = "¥${dayPrice + 70}",
-                originalPrice = "¥${dayPrice + 100}",
-                discount = "经济舱2.5折",
-                tags = listOf("领300里程", "绿色飞行奖里程"),
-                hasWifi = true
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 100}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
             ),
             FlightItem(
                 id = "SHA_BJS_${date}_4",
@@ -265,11 +273,12 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 airline = "国航",
                 flightNumber = "CA1502",
                 aircraftType = "空客330(大)",
-                price = "¥${dayPrice + 50}",
-                originalPrice = "¥${dayPrice + 80}",
-                discount = "经济舱3.2折",
-                tags = listOf("含餐食", "宽体机"),
-                hasWifi = true
+                price = "¥${businessPrice + 200}",
+                originalPrice = "¥${businessPrice + 300}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "宽体机", "平躺座椅"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -277,7 +286,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 北京到上海航班
     private fun generateBeijingToShanghaiFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 325)
+        val businessPrice = dayPrice * 3 // 公务舱价格约为经济舱的3倍
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "BJS_SHA_${date}_1",
                 departureTime = "08:30",
@@ -291,7 +302,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 25}",
                 discount = "早鸟特价",
                 tags = listOf("含餐食", "宽体机", "准点率高"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "BJS_SHA_${date}_2",
@@ -306,22 +318,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 45}",
                 discount = "限时优惠",
                 tags = listOf("随行送机", "会员积分2倍"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
+            // 公务/头等舱航班
             FlightItem(
                 id = "BJS_SHA_${date}_3",
-                departureTime = "17:40",
-                arrivalTime = "20:20",
-                departureAirport = "首都T2",
-                arrivalAirport = "浦东T1",
-                airline = "春秋",
-                flightNumber = "9C8529",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice - 20}",
-                originalPrice = "¥${dayPrice + 10}",
-                discount = "超值特价",
-                tags = listOf("低价首选"),
-                hasWifi = false
+                departureTime = "10:20",
+                arrivalTime = "12:55",
+                departureAirport = "首都T3",
+                arrivalAirport = "虹桥T2",
+                airline = "国航",
+                flightNumber = "CA1515",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 150}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "BJS_SHA_${date}_4",
+                departureTime = "16:30",
+                arrivalTime = "19:10",
+                departureAirport = "大兴",
+                arrivalAirport = "浦东T2",
+                airline = "东航",
+                flightNumber = "MU5199",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 200}",
+                originalPrice = "¥${businessPrice + 350}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -329,7 +360,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 上海到广州航班
     private fun generateShanghaiToGuangzhouFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 280)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SHA_CAN_${date}_1",
                 departureTime = "09:15",
@@ -343,7 +376,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 30}",
                 discount = "南航特惠",
                 tags = listOf("含餐食", "行李23kg"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "SHA_CAN_${date}_2",
@@ -358,22 +392,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 55}",
                 discount = "会员专享",
                 tags = listOf("东航优选", "积分兑换"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
+            // 公务/头等舱航班
             FlightItem(
                 id = "SHA_CAN_${date}_3",
-                departureTime = "19:10",
-                arrivalTime = "21:55",
+                departureTime = "11:30",
+                arrivalTime = "14:20",
                 departureAirport = "浦东T2",
                 arrivalAirport = "白云T2",
-                airline = "深航",
-                flightNumber = "ZH9247",
-                aircraftType = "空客320(中)",
-                price = "¥${dayPrice + 10}",
-                originalPrice = "¥${dayPrice + 40}",
-                discount = "晚班特价",
-                tags = listOf("深航服务", "免费改签"),
-                hasWifi = true
+                airline = "南航",
+                flightNumber = "CZ3557",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 150}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SHA_CAN_${date}_4",
+                departureTime = "17:40",
+                arrivalTime = "20:30",
+                departureAirport = "虹桥T2",
+                arrivalAirport = "白云T2",
+                airline = "国航",
+                flightNumber = "CA1825",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 180}",
+                originalPrice = "¥${businessPrice + 300}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -381,7 +434,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 广州到上海航班
     private fun generateGuangzhouToShanghaiFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 275)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CAN_SHA_${date}_1",
                 departureTime = "07:45",
@@ -395,7 +450,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 20}",
                 discount = "早鸟价",
                 tags = listOf("含餐食", "准点保障"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "CAN_SHA_${date}_2",
@@ -410,7 +466,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 60}",
                 discount = "厦航优选",
                 tags = listOf("白鹭常客", "服务优质"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CAN_SHA_${date}_3",
+                departureTime = "10:20",
+                arrivalTime = "13:15",
+                departureAirport = "白云T2",
+                arrivalAirport = "浦东T2",
+                airline = "南航",
+                flightNumber = "CZ3562",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 120}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CAN_SHA_${date}_4",
+                departureTime = "14:10",
+                arrivalTime = "17:05",
+                departureAirport = "白云T2",
+                arrivalAirport = "虹桥T2",
+                airline = "东航",
+                flightNumber = "MU5203",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 150}",
+                originalPrice = "¥${businessPrice + 280}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -418,7 +508,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 上海到深圳航班
     private fun generateShanghaiToShenzhenFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 290)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SHA_SZX_${date}_1",
                 departureTime = "08:40",
@@ -432,7 +524,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 25}",
                 discount = "深航直飞",
                 tags = listOf("深圳本土", "服务贴心"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "SHA_SZX_${date}_2",
@@ -447,7 +540,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 45}",
                 discount = "下午特惠",
                 tags = listOf("东航优选", "里程累积"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "SHA_SZX_${date}_3",
+                departureTime = "10:50",
+                arrivalTime = "13:45",
+                departureAirport = "浦东T2",
+                arrivalAirport = "宝安T3",
+                airline = "国航",
+                flightNumber = "CA1965",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 130}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SHA_SZX_${date}_4",
+                departureTime = "18:25",
+                arrivalTime = "21:20",
+                departureAirport = "虹桥T2",
+                arrivalAirport = "宝安T3",
+                airline = "深航",
+                flightNumber = "ZH9701",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 160}",
+                originalPrice = "¥${businessPrice + 290}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -455,7 +582,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 深圳到上海航班
     private fun generateShenzhenToShanghaiFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 285)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SZX_SHA_${date}_1",
                 departureTime = "09:50",
@@ -469,7 +598,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 20}",
                 discount = "深航优惠",
                 tags = listOf("准点率高", "服务周到"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "SZX_SHA_${date}_2",
@@ -484,7 +614,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice}",
                 discount = "晚班低价",
                 tags = listOf("超值选择"),
-                hasWifi = false
+                hasWifi = false,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "SZX_SHA_${date}_3",
+                departureTime = "12:30",
+                arrivalTime = "15:25",
+                departureAirport = "宝安T3",
+                arrivalAirport = "浦东T2",
+                airline = "东航",
+                flightNumber = "MU5411",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 140}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SZX_SHA_${date}_4",
+                departureTime = "16:40",
+                arrivalTime = "19:35",
+                departureAirport = "宝安T3",
+                arrivalAirport = "虹桥T2",
+                airline = "国航",
+                flightNumber = "CA1979",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 170}",
+                originalPrice = "¥${businessPrice + 300}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -492,7 +656,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 上海到成都航班
     private fun generateShanghaiToChengduFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 320)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SHA_CTU_${date}_1",
                 departureTime = "11:30",
@@ -506,7 +672,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 40}",
                 discount = "川航特价",
                 tags = listOf("川航服务", "熊猫主题"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "SHA_CTU_${date}_2",
@@ -521,7 +688,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 50}",
                 discount = "国航优选",
                 tags = listOf("含餐食", "凤凰知音"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "SHA_CTU_${date}_3",
+                departureTime = "09:20",
+                arrivalTime = "12:15",
+                departureAirport = "浦东T2",
+                arrivalAirport = "天府T1",
+                airline = "川航",
+                flightNumber = "3U8965",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 140}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SHA_CTU_${date}_4",
+                departureTime = "15:35",
+                arrivalTime = "18:30",
+                departureAirport = "虹桥T2",
+                arrivalAirport = "双流T1",
+                airline = "东航",
+                flightNumber = "MU5481",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 180}",
+                originalPrice = "¥${businessPrice + 310}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -529,7 +730,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 成都到上海航班
     private fun generateChengduToShanghaiFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 315)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CTU_SHA_${date}_1",
                 departureTime = "08:15",
@@ -543,7 +746,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 35}",
                 discount = "川航早班",
                 tags = listOf("熊猫餐食", "准点保障"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "CTU_SHA_${date}_2",
@@ -558,7 +762,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 55}",
                 discount = "东航特惠",
                 tags = listOf("东航优选", "积分双倍"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CTU_SHA_${date}_3",
+                departureTime = "11:40",
+                arrivalTime = "14:35",
+                departureAirport = "天府T1",
+                arrivalAirport = "浦东T2",
+                airline = "川航",
+                flightNumber = "3U8970",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 135}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CTU_SHA_${date}_4",
+                departureTime = "19:15",
+                arrivalTime = "22:10",
+                departureAirport = "双流T2",
+                arrivalAirport = "虹桥T2",
+                airline = "国航",
+                flightNumber = "CA4523",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 175}",
+                originalPrice = "¥${businessPrice + 305}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -599,7 +837,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 北京到广州航班
     private fun generateBeijingToGuangzhouFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 380)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "BJS_CAN_${date}_1",
                 departureTime = "10:30",
@@ -613,7 +853,8 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 40}",
                 discount = "南航主场",
                 tags = listOf("宽体机", "含餐食", "南航明珠"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
             ),
             FlightItem(
                 id = "BJS_CAN_${date}_2",
@@ -628,7 +869,41 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 65}",
                 discount = "国航优选",
                 tags = listOf("含餐食", "凤凰知音"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "BJS_CAN_${date}_3",
+                departureTime = "08:15",
+                arrivalTime = "12:00",
+                departureAirport = "首都T3",
+                arrivalAirport = "白云T2",
+                airline = "南航",
+                flightNumber = "CZ3115",
+                aircraftType = "空客350(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 160}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "BJS_CAN_${date}_4",
+                departureTime = "18:20",
+                arrivalTime = "22:05",
+                departureAirport = "大兴",
+                arrivalAirport = "白云T2",
+                airline = "国航",
+                flightNumber = "CA1315",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 200}",
+                originalPrice = "¥${businessPrice + 330}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -636,7 +911,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 广州到北京航班
     private fun generateGuangzhouToBeijingFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 375)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CAN_BJS_${date}_1",
                 departureTime = "08:20",
@@ -650,7 +927,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 35}",
                 discount = "早班特惠",
                 tags = listOf("宽体机", "准点保障"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "CAN_BJS_${date}_2",
+                departureTime = "14:50",
+                arrivalTime = "18:35",
+                departureAirport = "白云T1",
+                arrivalAirport = "大兴",
+                airline = "国航",
+                flightNumber = "CA1308",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 20}",
+                originalPrice = "¥${dayPrice + 50}",
+                discount = "国航优选",
+                tags = listOf("含餐食", "凤凰知音"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CAN_BJS_${date}_3",
+                departureTime = "11:10",
+                arrivalTime = "14:55",
+                departureAirport = "白云T2",
+                arrivalAirport = "首都T3",
+                airline = "南航",
+                flightNumber = "CZ3120",
+                aircraftType = "空客350(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 155}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CAN_BJS_${date}_4",
+                departureTime = "17:25",
+                arrivalTime = "21:10",
+                departureAirport = "白云T2",
+                arrivalAirport = "大兴",
+                airline = "东航",
+                flightNumber = "MU5227",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 190}",
+                originalPrice = "¥${businessPrice + 320}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -658,7 +985,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 北京到深圳航班
     private fun generateBeijingToShenzhenFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 390)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "BJS_SZX_${date}_1",
                 departureTime = "12:40",
@@ -672,7 +1001,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 30}",
                 discount = "深航直飞",
                 tags = listOf("深航优质服务"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "BJS_SZX_${date}_2",
+                departureTime = "17:15",
+                arrivalTime = "21:00",
+                departureAirport = "大兴",
+                arrivalAirport = "宝安T3",
+                airline = "国航",
+                flightNumber = "CA1355",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 20}",
+                originalPrice = "¥${dayPrice + 50}",
+                discount = "国航优选",
+                tags = listOf("含餐食", "凤凰知音"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "BJS_SZX_${date}_3",
+                departureTime = "09:30",
+                arrivalTime = "13:15",
+                departureAirport = "首都T3",
+                arrivalAirport = "宝安T3",
+                airline = "深航",
+                flightNumber = "ZH9911",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 165}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "BJS_SZX_${date}_4",
+                departureTime = "19:45",
+                arrivalTime = "23:30",
+                departureAirport = "大兴",
+                arrivalAirport = "宝安T3",
+                airline = "东航",
+                flightNumber = "MU5243",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 205}",
+                originalPrice = "¥${businessPrice + 335}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -680,7 +1059,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 深圳到北京航班
     private fun generateShenzhenToBeijingFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 385)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SZX_BJS_${date}_1",
                 departureTime = "07:50",
@@ -694,7 +1075,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 25}",
                 discount = "早鸟价",
                 tags = listOf("准点率高", "深航服务"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "SZX_BJS_${date}_2",
+                departureTime = "14:25",
+                arrivalTime = "18:10",
+                departureAirport = "宝安T3",
+                arrivalAirport = "大兴",
+                airline = "东航",
+                flightNumber = "MU5251",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 20}",
+                originalPrice = "¥${dayPrice + 55}",
+                discount = "东航优选",
+                tags = listOf("含餐食", "积分累积"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "SZX_BJS_${date}_3",
+                departureTime = "10:40",
+                arrivalTime = "14:25",
+                departureAirport = "宝安T3",
+                arrivalAirport = "首都T3",
+                airline = "深航",
+                flightNumber = "ZH9916",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 160}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SZX_BJS_${date}_4",
+                departureTime = "18:50",
+                arrivalTime = "22:35",
+                departureAirport = "宝安T3",
+                arrivalAirport = "大兴",
+                airline = "国航",
+                flightNumber = "CA1371",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 200}",
+                originalPrice = "¥${businessPrice + 330}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -702,7 +1133,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 北京到成都航班
     private fun generateBeijingToChengduFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 340)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "BJS_CTU_${date}_1",
                 departureTime = "13:15",
@@ -716,7 +1149,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 35}",
                 discount = "川航特色",
                 tags = listOf("熊猫服务", "川航优选"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "BJS_CTU_${date}_2",
+                departureTime = "18:40",
+                arrivalTime = "21:55",
+                departureAirport = "大兴",
+                arrivalAirport = "双流T1",
+                airline = "国航",
+                flightNumber = "CA4107",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 20}",
+                originalPrice = "¥${dayPrice + 50}",
+                discount = "国航优选",
+                tags = listOf("含餐食", "凤凰知音"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "BJS_CTU_${date}_3",
+                departureTime = "10:05",
+                arrivalTime = "13:20",
+                departureAirport = "首都T3",
+                arrivalAirport = "天府T1",
+                airline = "川航",
+                flightNumber = "3U8895",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 145}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "BJS_CTU_${date}_4",
+                departureTime = "15:50",
+                arrivalTime = "19:05",
+                departureAirport = "大兴",
+                arrivalAirport = "双流T2",
+                airline = "东航",
+                flightNumber = "MU5265",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 175}",
+                originalPrice = "¥${businessPrice + 305}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -724,7 +1207,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 成都到北京航班
     private fun generateChengduToBeijingFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 335)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CTU_BJS_${date}_1",
                 departureTime = "09:40",
@@ -738,7 +1223,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 30}",
                 discount = "川航优惠",
                 tags = listOf("熊猫主题", "川味服务"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "CTU_BJS_${date}_2",
+                departureTime = "15:20",
+                arrivalTime = "18:35",
+                departureAirport = "双流T2",
+                arrivalAirport = "大兴",
+                airline = "国航",
+                flightNumber = "CA4115",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 25}",
+                originalPrice = "¥${dayPrice + 55}",
+                discount = "国航优选",
+                tags = listOf("含餐食", "凤凰知音"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CTU_BJS_${date}_3",
+                departureTime = "12:10",
+                arrivalTime = "15:25",
+                departureAirport = "天府T1",
+                arrivalAirport = "首都T3",
+                airline = "川航",
+                flightNumber = "3U8900",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 140}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CTU_BJS_${date}_4",
+                departureTime = "18:00",
+                arrivalTime = "21:15",
+                departureAirport = "双流T1",
+                arrivalAirport = "大兴",
+                airline = "东航",
+                flightNumber = "MU5273",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 170}",
+                originalPrice = "¥${businessPrice + 300}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -746,7 +1281,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 广州到深圳航班（短程）
     private fun generateGuangzhouToShenzhenFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 120)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CAN_SZX_${date}_1",
                 departureTime = "14:20",
@@ -760,7 +1297,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 10}",
                 discount = "短程特价",
                 tags = listOf("快速便捷"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "CAN_SZX_${date}_2",
+                departureTime = "18:15",
+                arrivalTime = "18:55",
+                departureAirport = "白云T2",
+                arrivalAirport = "宝安T3",
+                airline = "南航",
+                flightNumber = "CZ3231",
+                aircraftType = "空客320(中)",
+                price = "¥${dayPrice + 10}",
+                originalPrice = "¥${dayPrice + 20}",
+                discount = "短程优惠",
+                tags = listOf("快速直达"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CAN_SZX_${date}_3",
+                departureTime = "10:30",
+                arrivalTime = "11:10",
+                departureAirport = "白云T2",
+                arrivalAirport = "宝安T3",
+                airline = "深航",
+                flightNumber = "ZH9325",
+                aircraftType = "空客320(中)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 50}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CAN_SZX_${date}_4",
+                departureTime = "16:40",
+                arrivalTime = "17:20",
+                departureAirport = "白云T2",
+                arrivalAirport = "宝安T3",
+                airline = "南航",
+                flightNumber = "CZ3245",
+                aircraftType = "空客321(中)",
+                price = "¥${businessPrice + 60}",
+                originalPrice = "¥${businessPrice + 100}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "优先服务"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -768,7 +1355,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 深圳到广州航班（短程）
     private fun generateShenzhenToGuangzhouFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 115)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "SZX_CAN_${date}_1",
                 departureTime = "16:30",
@@ -782,7 +1371,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 10}",
                 discount = "短程优惠",
                 tags = listOf("珠三角快线"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "SZX_CAN_${date}_2",
+                departureTime = "19:45",
+                arrivalTime = "20:25",
+                departureAirport = "宝安T3",
+                arrivalAirport = "白云T2",
+                airline = "南航",
+                flightNumber = "CZ3237",
+                aircraftType = "空客320(中)",
+                price = "¥${dayPrice + 5}",
+                originalPrice = "¥${dayPrice + 15}",
+                discount = "晚班特价",
+                tags = listOf("快速便捷"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "SZX_CAN_${date}_3",
+                departureTime = "11:50",
+                arrivalTime = "12:30",
+                departureAirport = "宝安T3",
+                arrivalAirport = "白云T2",
+                airline = "深航",
+                flightNumber = "ZH9328",
+                aircraftType = "空客320(中)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 50}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "SZX_CAN_${date}_4",
+                departureTime = "15:20",
+                arrivalTime = "16:00",
+                departureAirport = "宝安T3",
+                arrivalAirport = "白云T2",
+                airline = "南航",
+                flightNumber = "CZ3251",
+                aircraftType = "空客321(中)",
+                price = "¥${businessPrice + 55}",
+                originalPrice = "¥${businessPrice + 95}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "优先服务"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }
@@ -790,7 +1429,9 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     // 广州到成都航班
     private fun generateGuangzhouToChengduFlights(date: LocalDate): List<FlightItem> {
         val dayPrice = calculateDayPrice(date, 310)
+        val businessPrice = dayPrice * 3
         return listOf(
+            // 经济舱航班
             FlightItem(
                 id = "CAN_CTU_${date}_1",
                 departureTime = "11:25",
@@ -804,7 +1445,57 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
                 originalPrice = "¥${dayPrice + 40}",
                 discount = "川航特色",
                 tags = listOf("熊猫餐食", "川航服务"),
-                hasWifi = true
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            FlightItem(
+                id = "CAN_CTU_${date}_2",
+                departureTime = "17:10",
+                arrivalTime = "19:40",
+                departureAirport = "白云T1",
+                arrivalAirport = "双流T2",
+                airline = "南航",
+                flightNumber = "CZ3417",
+                aircraftType = "波音737-800(中)",
+                price = "¥${dayPrice + 25}",
+                originalPrice = "¥${dayPrice + 55}",
+                discount = "南航优选",
+                tags = listOf("南航服务", "明珠会员"),
+                hasWifi = true,
+                cabinClass = "economy"
+            ),
+            // 公务/头等舱航班
+            FlightItem(
+                id = "CAN_CTU_${date}_3",
+                departureTime = "08:50",
+                arrivalTime = "11:20",
+                departureAirport = "白云T2",
+                arrivalAirport = "天府T1",
+                airline = "川航",
+                flightNumber = "3U8745",
+                aircraftType = "空客330(大)",
+                price = "¥${businessPrice}",
+                originalPrice = "¥${businessPrice + 130}",
+                discount = "公务舱特惠",
+                tags = listOf("公务舱", "贵宾休息室", "优先登机"),
+                hasWifi = true,
+                cabinClass = "business"
+            ),
+            FlightItem(
+                id = "CAN_CTU_${date}_4",
+                departureTime = "14:35",
+                arrivalTime = "17:05",
+                departureAirport = "白云T2",
+                arrivalAirport = "双流T1",
+                airline = "东航",
+                flightNumber = "MU5285",
+                aircraftType = "波音787(大)",
+                price = "¥${businessPrice + 165}",
+                originalPrice = "¥${businessPrice + 295}",
+                discount = "头等舱礼遇",
+                tags = listOf("头等舱", "豪华餐食", "平躺座椅", "宽体机"),
+                hasWifi = true,
+                cabinClass = "business"
             )
         )
     }

@@ -34,7 +34,7 @@ class TrainDetailTabModel(private val context: Context) : TrainDetailTabContract
         )
     }
 
-    override fun getSeatTypes(trainId: String, selectedSeatType: String): List<SeatType> {
+    override fun getSeatTypes(trainId: String, selectedSeatType: String, isStudentTicket: Boolean): List<SeatType> {
         val train = loadTrainsFromAssets().find { it.trainId == trainId } ?: return emptyList()
 
         val seatTypes = mutableListOf<SeatType>()
@@ -98,7 +98,7 @@ class TrainDetailTabModel(private val context: Context) : TrainDetailTabContract
         return seatTypes
     }
 
-    override fun getTicketOptions(trainId: String, seatType: String): List<TrainTicketOption> {
+    override fun getTicketOptions(trainId: String, seatType: String, isStudentTicket: Boolean): List<TrainTicketOption> {
         val train = loadTrainsFromAssets().find { it.trainId == trainId } ?: return emptyList()
         val basePrice = train.prices[seatType]?.toInt() ?: train.prices["二等座"]?.toInt() ?: 0
         val availableCount = train.availableSeats[seatType] ?: train.availableSeats["二等座"] ?: 0
