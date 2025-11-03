@@ -1,6 +1,7 @@
 package com.example.Ctrip.home
 
 import android.content.Context
+import com.example.Ctrip.utils.ClickHistoryManager
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -19,8 +20,15 @@ class HomeTabModelImpl(private val context: Context) : HomeTabContract.Model {
     
     override fun saveActionClick(actionId: String) {
         // Save action click for AI task checking
-        // For now, just log it
         println("Action clicked: $actionId")
+
+        // 记录点击事件到 JSON 文件，供自动化测试使用
+        when (actionId) {
+            "hotel" -> ClickHistoryManager.recordClick(context, "酒店", "酒店预订页面")
+            "flight" -> ClickHistoryManager.recordClick(context, "机票", "机票预订页面")
+            "train" -> ClickHistoryManager.recordClick(context, "火车票", "火车票预订页面")
+            else -> ClickHistoryManager.recordClick(context, actionId, "${actionId}页面")
+        }
     }
     
     override fun saveSearchQuery(query: String) {
