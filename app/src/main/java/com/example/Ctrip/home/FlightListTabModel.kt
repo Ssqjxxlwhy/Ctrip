@@ -1616,17 +1616,93 @@ class FlightListTabModel(private val context: Context) : FlightListTabContract.M
     }
     
     override fun saveFlightSelection(flightId: String) {
-        val selectionData = mapOf(
+        // 解析航班ID获取详细信息
+        // flight_id格式: "CTU_SZX_2025-10-24_1"
+        val flightInfo = parseFlightId(flightId)
+
+        val selectionData = mutableMapOf<String, Any>(
             "action" to "flight_selected",
             "timestamp" to System.currentTimeMillis(),
             "flight_id" to flightId,
             "page" to "flight_list"
         )
-        
+
+        // 添加解析后的详细信息
+        if (flightInfo != null) {
+            selectionData["from"] = flightInfo["from"] as String
+            selectionData["to"] = flightInfo["to"] as String
+            selectionData["date"] = flightInfo["date"] as String
+            selectionData["flightIndex"] = flightInfo["flightIndex"] as Int
+
+            // 根据航班信息查找对应的航班并获取价格和舱位
+            try {
+                val fromCity = flightInfo["from"] as String
+                val toCity = flightInfo["to"] as String
+                val dateStr = flightInfo["date"] as String
+                val flightIndex = flightInfo["flightIndex"] as Int
+                val date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE)
+
+                // 获取航班列表（假设经济舱，因为我们需要获取实际的航班对象）
+                val flights = generateFlightsForRoute(fromCity, toCity, date)
+                if (flightIndex >= 0 && flightIndex < flights.size) {
+                    val flight = flights[flightIndex]
+                    // 将英文舱位转换为中文
+                    val cabinChinese = when (flight.cabinClass) {
+                        "economy" -> "经济舱"
+                        "business" -> "公务/头等舱"
+                        else -> flight.cabinClass
+                    }
+                    selectionData["cabin"] = cabinChinese
+                    selectionData["price"] = flight.price.toDouble()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("FlightListTabModel", "获取航班价格失败", e)
+            }
+        }
+
         val actionJson = gson.toJson(selectionData)
         sharedPreferences.edit()
             .putString("last_flight_selection_${System.currentTimeMillis()}", actionJson)
+            .putString("current_flight_booking_info", actionJson)  // 保存当前预订信息供后续使用
             .apply()
+    }
+
+    /**
+     * 解析航班ID获取详细信息
+     * flight_id格式: "CTU_SZX_2025-10-24_1"
+     */
+    private fun parseFlightId(flightId: String): Map<String, Any>? {
+        try {
+            val parts = flightId.split("_")
+            if (parts.size < 4) return null
+
+            val fromCode = parts[0]
+            val toCode = parts[1]
+            val date = parts[2]
+            val index = parts[3].toIntOrNull() ?: return null
+
+            // 机场代码到城市名称的映射
+            val cityMap = mapOf(
+                "SHA" to "上海", "BJS" to "北京", "CAN" to "广州",
+                "SZX" to "深圳", "CTU" to "成都"
+            )
+
+            val fromCity = cityMap[fromCode] ?: return null
+            val toCity = cityMap[toCode] ?: return null
+
+            // 航班索引从ID中的数字减1（因为ID中1表示第一个航班，索引为0）
+            val flightIndex = index - 1
+
+            return mapOf(
+                "from" to fromCity,
+                "to" to toCity,
+                "date" to date,
+                "flightIndex" to flightIndex
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("FlightListTabModel", "解析航班ID失败: $flightId", e)
+            return null
+        }
     }
     
     override fun saveDateSelection(dateId: String) {

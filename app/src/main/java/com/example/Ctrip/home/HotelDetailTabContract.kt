@@ -132,5 +132,6 @@ interface HotelDetailTabContract {
         fun getRoomTypes(hotelId: String): List<RoomType>
         fun filterRoomTypes(roomTypes: List<RoomType>, tags: List<RoomFilterTag>): List<RoomType>
         fun saveHotelDetailAction(action: String, data: Map<String, Any>)
+        fun getHotelIndex(hotelId: String): Int?
     }
 }

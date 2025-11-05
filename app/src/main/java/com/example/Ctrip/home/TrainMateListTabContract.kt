@@ -102,5 +102,6 @@ interface TrainMateListTabContract {
         fun sortTrains(trains: List<TrainTicket>, sortType: SortType): List<TrainTicket>
         fun getDateOptions(selectedDate: LocalDate): List<TrainDateOption>
         fun getTransportOptions(): List<TransportOption>
+        fun saveTrainSelection(trainId: String)
     }
 }

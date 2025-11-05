@@ -2,8 +2,8 @@ import subprocess
 import json
 import os
 
-# 任务35：订10月15日北京飞上海的6张经济舱机票
-# 检查条件：type="batch_booking", bookingType="flight", from="北京", to="上海", date="2025-10-15", cabin="经济舱", quantity=6
+# 任务35：订10月25日北京飞上海的6张经济舱机票
+# 检查条件：最后6条记录都是：机票(北京->上海, 2025-10-25, 经济舱)
 
 def check_booking_batch_flight():
     app_package = "com.example.Ctrip"
@@ -39,20 +39,25 @@ def check_booking_batch_flight():
     except Exception:
         return False
 
-    # 3. 检查最新预订记录
+    # 3. 检查最后6条预订记录
     try:
         booking_events = data.get("booking_events", [])
-        if not booking_events:
+        if len(booking_events) < 6:
             return False
-        latest_event = booking_events[-1]
 
-        return (latest_event.get("type") == "batch_booking" and
-                latest_event.get("bookingType") == "flight" and
-                latest_event.get("from") == "北京" and
-                latest_event.get("to") == "上海" and
-                latest_event.get("date") == "2025-10-15" and
-                latest_event.get("cabin") == "经济舱" and
-                latest_event.get("quantity") == 6)
+        # 获取最后6条记录
+        last_six = booking_events[-6:]
+
+        # 验证所有6条记录都是机票(北京->上海, 2025-10-25, 经济舱)
+        for record in last_six:
+            if not (record.get("type") == "flight_booking" and
+                    record.get("from") == "北京" and
+                    record.get("to") == "上海" and
+                    record.get("date") == "2025-10-25" and
+                    record.get("cabin") == "经济舱"):
+                return False
+
+        return True
     except:
         return False
 

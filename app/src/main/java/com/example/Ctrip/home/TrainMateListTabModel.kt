@@ -1,8 +1,10 @@
 package com.example.Ctrip.home
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.example.Ctrip.utils.DateUtils
 import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -11,6 +13,8 @@ class TrainMateListTabModel(private val context: Context) : TrainMateListTabCont
 
     private val gson = Gson()
     private var cachedTrains: List<TrainTicket>? = null
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("train_list_data", Context.MODE_PRIVATE)
 
     override fun getTrainList(departureCity: String, arrivalCity: String, departureDate: LocalDate): List<TrainTicket> {
         val allTrains = loadTrainsFromAssets()
@@ -77,7 +81,7 @@ class TrainMateListTabModel(private val context: Context) : TrainMateListTabCont
     }
 
     override fun getDateOptions(selectedDate: LocalDate): List<TrainDateOption> {
-        val today = LocalDate.now()
+        val today = DateUtils.getCurrentDate()
         val options = mutableListOf<TrainDateOption>()
 
         for (i in 0..4) {
@@ -145,5 +149,77 @@ class TrainMateListTabModel(private val context: Context) : TrainMateListTabCont
 
     private fun getLowestPrice(prices: Map<String, Double>): Double {
         return prices.values.filter { it > 0 }.minOrNull() ?: Double.MAX_VALUE
+    }
+
+    override fun saveTrainSelection(trainId: String) {
+        // 解析车次ID获取详细信息
+        // trainId格式: "train_北京_上海_0_0"
+        val trainInfo = parseTrainId(trainId)
+
+        // 根据trainId获取车次的详细信息（包括出发时间、到达时间、时长、价格）
+        val train = loadTrainsFromAssets().find { it.trainId == trainId }
+
+        val selectionData = mutableMapOf<String, Any>(
+            "action" to "train_selected",
+            "timestamp" to System.currentTimeMillis(),
+            "train_id" to trainId,
+            "page" to "train_list"
+        )
+
+        // 添加解析后的详细信息
+        trainInfo?.let {
+            selectionData["from"] = it["from"] as String
+            selectionData["to"] = it["to"] as String
+            selectionData["date"] = it["date"] as String
+            selectionData["trainIndex"] = it["trainIndex"] as Int
+        }
+
+        // 添加出发时间、到达时间、时长和最低价格
+        train?.let {
+            selectionData["departureTime"] = it.departureTime
+            selectionData["arrivalTime"] = it.arrivalTime
+            selectionData["duration"] = it.duration
+            // 获取最低价格
+            val lowestPrice = it.prices.values.filter { price -> price > 0 }.minOrNull() ?: 0.0
+            selectionData["price"] = lowestPrice
+        }
+
+        val actionJson = gson.toJson(selectionData)
+        sharedPreferences.edit()
+            .putString("last_train_selection_${System.currentTimeMillis()}", actionJson)
+            .putString("current_train_booking_info", actionJson)  // 保存当前预订信息供后续使用
+            .apply()
+    }
+
+    /**
+     * 解析车次ID获取详细信息
+     * trainId格式: "train_北京_上海_0_0"
+     */
+    private fun parseTrainId(trainId: String): Map<String, Any>? {
+        try {
+            val parts = trainId.split("_")
+            if (parts.size < 5) return null
+
+            // parts[0] = "train"
+            val fromCity = parts[1]
+            val toCity = parts[2]
+            val dateIndex = parts[3].toIntOrNull() ?: return null
+            val trainIndex = parts[4].toIntOrNull() ?: return null
+
+            // 根据日期索引计算实际日期，使用DateUtils.getCurrentDate()保持一致性
+            val baseDate = DateUtils.getCurrentDate()
+            val actualDate = baseDate.plusDays(dateIndex.toLong())
+            val dateStr = actualDate.format(DateTimeFormatter.ISO_DATE)
+
+            return mapOf(
+                "from" to fromCity,
+                "to" to toCity,
+                "date" to dateStr,
+                "trainIndex" to trainIndex
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("TrainMateListTabModel", "解析车次ID失败: $trainId", e)
+            return null
+        }
     }
 }

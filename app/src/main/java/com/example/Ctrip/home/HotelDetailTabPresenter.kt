@@ -1,11 +1,19 @@
 package com.example.Ctrip.home
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.example.Ctrip.utils.BookingHistoryManager
+import com.google.gson.Gson
 import java.time.LocalDate
 
-class HotelDetailTabPresenter(private val model: HotelDetailTabModel) : HotelDetailTabContract.Presenter {
-    
+class HotelDetailTabPresenter(private val model: HotelDetailTabModel, private val context: Context? = null) : HotelDetailTabContract.Presenter {
+
     private var view: HotelDetailTabContract.View? = null
     private var currentData: HotelDetailData? = null
+    private val gson = Gson()
+    private val sharedPreferences: SharedPreferences? by lazy {
+        context?.getSharedPreferences("hotel_list_data", Context.MODE_PRIVATE)
+    }
     
     override fun attachView(view: HotelDetailTabContract.View) {
         this.view = view
@@ -113,6 +121,48 @@ class HotelDetailTabPresenter(private val model: HotelDetailTabModel) : HotelDet
             "room_type_name" to roomType.name,
             "price" to roomType.price
         ))
+
+        // 记录预订信息（用于自动化测试验证）
+        currentData?.let { data ->
+            context?.let { ctx ->
+                // 获取酒店在列表中的索引（如果有）
+                val hotelIndex = model.getHotelIndex(data.hotel.id)
+                // 获取房型在列表中的索引
+                val roomIndex = data.roomTypes.indexOfFirst { it.id == roomType.id }
+
+                // 判断是否选择了最便宜的房型
+                val cheapestRoomPrice = data.roomTypes.minOfOrNull { it.price }
+                val isCheapestRoom = (roomType.price == cheapestRoomPrice)
+
+                // 从SharedPreferences读取酒店是否是列表中最便宜的
+                val isCheapestHotel = try {
+                    val hotelSelectionJson = sharedPreferences?.getString("current_hotel_selection", null)
+                    if (hotelSelectionJson != null) {
+                        val jsonObject = org.json.JSONObject(hotelSelectionJson)
+                        jsonObject.optBoolean("is_cheapest_hotel", false)
+                    } else {
+                        false
+                    }
+                } catch (e: Exception) {
+                    false
+                }
+
+                // 只有当酒店是最便宜的，且房型也是最便宜的时，才标记为cheapest
+                val selection = if (isCheapestHotel && isCheapestRoom) "cheapest" else null
+
+                BookingHistoryManager.recordHotelBooking(
+                    context = ctx,
+                    city = data.hotel.city,
+                    checkIn = data.searchParams.checkInDate.toString(),
+                    checkOut = data.searchParams.checkOutDate.toString(),
+                    hotelIndex = hotelIndex,
+                    roomIndex = if (roomIndex >= 0) roomIndex else null,
+                    selection = selection,
+                    hotelName = data.hotel.name,
+                    price = roomType.price.toDouble()
+                )
+            }
+        }
     }
     
     override fun onContactHotelClicked() {

@@ -448,10 +448,27 @@ class HotelDetailTabModelImpl(private val context: Context) : HotelDetailTabMode
             "timestamp" to System.currentTimeMillis(),
             "data" to data
         )
-        
+
         val actionJson = gson.toJson(actionData)
         sharedPreferences.edit()
             .putString("hotel_detail_action_${System.currentTimeMillis()}", actionJson)
             .apply()
+    }
+
+    override fun getHotelIndex(hotelId: String): Int? {
+        // 从酒店ID中提取索引信息
+        // 上海酒店ID格式: hotel_sh_001, hotel_sh_002, ...
+        // 返回的索引基于列表顺序（按价格排序）
+
+        // 上海酒店列表（按默认顺序）
+        val shanghaiHotels = listOf(
+            "hotel_sh_001",  // 上海外滩茂悦大酒店
+            "hotel_sh_002",  // 上海迪士尼乐园酒店
+            "hotel_sh_003",  // 上海虹桥机场华美达酒店
+            "hotel_sh_004",  // 上海南京路步行街亚朵酒店
+            "hotel_sh_005"   // 上海田子坊创意民宿
+        )
+
+        return shanghaiHotels.indexOf(hotelId).takeIf { it >= 0 }
     }
 }

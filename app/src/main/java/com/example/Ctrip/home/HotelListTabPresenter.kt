@@ -67,7 +67,13 @@ class HotelListTabPresenter(private val model: HotelListTabModel) : HotelListTab
     }
     
     override fun onHotelClicked(hotel: HotelItem) {
-        model.saveHotelSelection(hotel)
+        // 判断该酒店是否是当前列表中价格最低的
+        val isCheapest = currentData?.hotels?.let { hotels ->
+            val lowestPrice = hotels.minOfOrNull { it.price }
+            hotel.price == lowestPrice
+        } ?: false
+
+        model.saveHotelSelection(hotel, isCheapest)
         view?.onHotelSelected(hotel)
     }
     

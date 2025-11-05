@@ -41,7 +41,7 @@ fun HotelDetailTabScreen(
 ) {
     val context = LocalContext.current
     val model = remember { HotelDetailTabModelImpl(context) }
-    val presenter = remember { HotelDetailTabPresenter(model) }
+    val presenter = remember { HotelDetailTabPresenter(model, context) }
     
     var hotelDetailData by remember { mutableStateOf<HotelDetailData?>(null) }
     var isLoading by remember { mutableStateOf(false) }

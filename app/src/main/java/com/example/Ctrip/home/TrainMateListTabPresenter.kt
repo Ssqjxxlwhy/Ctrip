@@ -1,5 +1,6 @@
 package com.example.Ctrip.home
 
+import com.example.Ctrip.utils.DateUtils
 import java.time.LocalDate
 
 class TrainMateListTabPresenter(private val model: TrainMateListTabContract.Model) : TrainMateListTabContract.Presenter {
@@ -8,7 +9,7 @@ class TrainMateListTabPresenter(private val model: TrainMateListTabContract.Mode
     private var allTrains: List<TrainTicket> = emptyList()
     private var currentDepartureCity: String = ""
     private var currentArrivalCity: String = ""
-    private var currentDate: LocalDate = LocalDate.now()
+    private var currentDate: LocalDate = DateUtils.getCurrentDate()
     private var currentFilterOptions: TrainFilterOptions = TrainFilterOptions(null, null, false, false, false)
     private var currentSortType: SortType = SortType.DEFAULT
 
@@ -68,6 +69,7 @@ class TrainMateListTabPresenter(private val model: TrainMateListTabContract.Mode
     }
 
     override fun onTrainClicked(trainId: String) {
+        model.saveTrainSelection(trainId)
         view?.navigateToTrainDetail(trainId)
     }
 

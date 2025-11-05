@@ -541,19 +541,21 @@ class HotelListTabModelImpl(private val context: Context) : HotelListTabModel {
         }
     }
     
-    override fun saveHotelSelection(hotel: HotelItem) {
-        val selectionData = mapOf(
+    override fun saveHotelSelection(hotel: HotelItem, isCheapest: Boolean) {
+        val selectionData = mutableMapOf<String, Any>(
             "action" to "hotel_selected",
             "timestamp" to System.currentTimeMillis(),
             "hotel_id" to hotel.id,
             "hotel_name" to hotel.name,
             "city" to hotel.city,
-            "price" to hotel.price
+            "price" to hotel.price,
+            "is_cheapest_hotel" to isCheapest
         )
-        
+
         val actionJson = gson.toJson(selectionData)
         sharedPreferences.edit()
             .putString("last_hotel_selection_${System.currentTimeMillis()}", actionJson)
+            .putString("current_hotel_selection", actionJson)  // 保存当前选择供详情页使用
             .apply()
     }
     

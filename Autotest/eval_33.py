@@ -1,9 +1,22 @@
 import subprocess
 import json
 import os
+import re
 
 # 任务33：订5张10月20日深圳到北京的火车票（要求5小时内到达）
-# 检查条件：type="batch_booking", bookingType="train", from="深圳", to="北京", date="2025-10-20", quantity=5, constraint="duration<=5h"
+# 检查条件：最后5条记录都是：火车票(深圳->北京, 2025-10-20, duration<=5小时)
+
+def parse_duration(duration_str):
+    """
+    解析时长字符串，如 "4时55分" -> 295分钟
+    """
+    hour_match = re.search(r'(\d+)时', duration_str)
+    minute_match = re.search(r'(\d+)分', duration_str)
+
+    hours = int(hour_match.group(1)) if hour_match else 0
+    minutes = int(minute_match.group(1)) if minute_match else 0
+
+    return hours * 60 + minutes
 
 def check_booking_batch_train():
     app_package = "com.example.Ctrip"
@@ -39,20 +52,33 @@ def check_booking_batch_train():
     except Exception:
         return False
 
-    # 3. 检查最新预订记录
+    # 3. 检查最后5条预订记录
     try:
         booking_events = data.get("booking_events", [])
-        if not booking_events:
+        if len(booking_events) < 5:
             return False
-        latest_event = booking_events[-1]
 
-        return (latest_event.get("type") == "batch_booking" and
-                latest_event.get("bookingType") == "train" and
-                latest_event.get("from") == "深圳" and
-                latest_event.get("to") == "北京" and
-                latest_event.get("date") == "2025-10-20" and
-                latest_event.get("quantity") == 5 and
-                latest_event.get("constraint") == "duration<=5h")
+        # 获取最后5条记录
+        last_five = booking_events[-5:]
+
+        # 验证所有5条记录都是火车票(深圳->北京, 2025-10-20)，且5小时内到达
+        for record in last_five:
+            if not (record.get("type") == "train_booking" and
+                    record.get("from") == "深圳" and
+                    record.get("to") == "北京" and
+                    record.get("date") == "2025-10-20"):
+                return False
+
+            # 检查时长是否5小时内
+            duration = record.get("duration", "")
+            if duration:
+                duration_minutes = parse_duration(duration)
+                if duration_minutes > 300:  # 5小时 = 300分钟
+                    return False
+            else:
+                return False  # 没有时长信息，返回false
+
+        return True
     except:
         return False
 

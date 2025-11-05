@@ -25,7 +25,8 @@ object BookingHistoryManager {
         hotelIndex: Int? = null,
         roomIndex: Int? = null,
         selection: String? = null,
-        hotelName: String? = null
+        hotelName: String? = null,
+        price: Double? = null
     ) {
         val params = mutableMapOf<String, Any>(
             "type" to "hotel_booking",
@@ -37,6 +38,7 @@ object BookingHistoryManager {
         roomIndex?.let { params["roomIndex"] = it }
         selection?.let { params["selection"] = it }
         hotelName?.let { params["hotelName"] = it }
+        price?.let { params["price"] = it }
 
         recordBooking(context, params)
     }
@@ -50,7 +52,8 @@ object BookingHistoryManager {
         to: String,
         date: String,
         flightIndex: Int? = null,
-        cabin: String? = null
+        cabin: String? = null,
+        price: Double? = null
     ) {
         val params = mutableMapOf<String, Any>(
             "type" to "flight_booking",
@@ -60,6 +63,7 @@ object BookingHistoryManager {
         )
         flightIndex?.let { params["flightIndex"] = it }
         cabin?.let { params["cabin"] = it }
+        price?.let { params["price"] = it }
 
         recordBooking(context, params)
     }
@@ -73,8 +77,11 @@ object BookingHistoryManager {
         to: String,
         date: String,
         trainIndex: Int? = null,
-        timeRange: String? = null,
-        constraint: String? = null
+        departureTime: String? = null,
+        arrivalTime: String? = null,
+        duration: String? = null,
+        constraint: String? = null,
+        price: Double? = null
     ) {
         val params = mutableMapOf<String, Any>(
             "type" to "train_booking",
@@ -83,8 +90,11 @@ object BookingHistoryManager {
             "date" to date
         )
         trainIndex?.let { params["trainIndex"] = it }
-        timeRange?.let { params["timeRange"] = it }
+        departureTime?.let { params["departureTime"] = it }
+        arrivalTime?.let { params["arrivalTime"] = it }
+        duration?.let { params["duration"] = it }
         constraint?.let { params["constraint"] = it }
+        price?.let { params["price"] = it }
 
         recordBooking(context, params)
     }

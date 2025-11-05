@@ -2,8 +2,8 @@ import subprocess
 import json
 import os
 
-# 任务30：进入"火车票"页面，选出发地"北京"、目的地"上海"，选择日期10月20日，得到车次列表后，预订下午3点到下午4点的任意一班车次
-# 检查条件：type="train_booking", from="北京", to="上海", date="2025-10-20", timeRange="15:00-16:00"
+# 任务30：进入"火车票"页面，选出发地"北京"、目的地"上海"，选择日期10月20日，得到车次列表后，预订下午1点到下午3点的任意一班车次
+# 检查条件：type="train_booking", from="北京", to="上海", date="2025-10-20", departureTime在13:00-15:00范围内
 
 def check_booking_train_time():
     app_package = "com.example.Ctrip"
@@ -45,11 +45,37 @@ def check_booking_train_time():
         if not booking_events:
             return False
         latest_event = booking_events[-1]
-        return (latest_event.get("type") == "train_booking" and
-                latest_event.get("from") == "北京" and
-                latest_event.get("to") == "上海" and
-                latest_event.get("date") == "2025-10-20" and
-                latest_event.get("timeRange") == "15:00-16:00")
+
+        # 检查基本字段
+        if (latest_event.get("type") != "train_booking" or
+            latest_event.get("from") != "北京" or
+            latest_event.get("to") != "上海" or
+            latest_event.get("date") != "2025-10-20"):
+            return False
+
+        # 检查departureTime是否在13:00-15:00范围内
+        departure_time = latest_event.get("departureTime", "")
+        if not departure_time:
+            return False
+
+        # 解析时间 "HH:MM"
+        time_parts = departure_time.split(":")
+        if len(time_parts) != 2:
+            return False
+
+        try:
+            hour = int(time_parts[0])
+            minute = int(time_parts[1])
+
+            # 转换为分钟数进行比较
+            total_minutes = hour * 60 + minute
+
+            # 13:00 = 780分钟, 15:00 = 900分钟
+            # 判断是否在13:00到15:00之间（不包括15:00）
+            return 780 <= total_minutes < 900
+        except ValueError:
+            return False
+
     except:
         return False
 

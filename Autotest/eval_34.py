@@ -2,8 +2,8 @@ import subprocess
 import json
 import os
 
-# 任务34：订5张10月20日广州到北京的最早火车票，再订北京3家不同的酒店
-# 检查条件：type="complex_batch_booking"且有：trainBooking(5张,最早) 和 hotelBooking(3家,不同)
+# 任务34：订5张10月20日广州到北京的火车票，再订北京3家不同的酒店
+# 检查条件：最后8条记录前5条是火车票(广州->北京, 2025-10-20)，后3条是酒店(北京,不同酒店)
 
 def check_booking_complex_batch():
     app_package = "com.example.Ctrip"
@@ -39,28 +39,38 @@ def check_booking_complex_batch():
     except Exception:
         return False
 
-    # 3. 检查最新预订记录
+    # 3. 检查最后8条预订记录
     try:
         booking_events = data.get("booking_events", [])
-        if not booking_events:
-            return False
-        latest_event = booking_events[-1]
-
-        # 检查type是否为complex_batch_booking
-        if latest_event.get("type") != "complex_batch_booking":
+        if len(booking_events) < 8:
             return False
 
-        # 检查trainBooking
-        train_booking = latest_event.get("trainBooking", {})
-        if not (train_booking.get("from") == "广州" and
-                train_booking.get("to") == "北京" and
-                train_booking.get("quantity") == 5):
-            return False
+        # 获取最后8条记录
+        last_eight = booking_events[-8:]
 
-        # 检查hotelBooking
-        hotel_booking = latest_event.get("hotelBooking", {})
-        if not (hotel_booking.get("city") == "北京" and
-                hotel_booking.get("quantity") == 3):
+        # 验证前5条记录都是火车票(广州->北京, 2025-10-20)
+        for i in range(5):
+            record = last_eight[i]
+            if not (record.get("type") == "train_booking" and
+                    record.get("from") == "广州" and
+                    record.get("to") == "北京" and
+                    record.get("date") == "2025-10-20"):
+                return False
+
+        # 验证后3条记录都是酒店(北京)
+        hotel_names = []
+        for i in range(5, 8):
+            record = last_eight[i]
+            if not (record.get("type") == "hotel_booking" and
+                    record.get("city") == "北京"):
+                return False
+
+            # 收集酒店名称以检查是否不同
+            hotel_name = record.get("hotelName", "")
+            hotel_names.append(hotel_name)
+
+        # 验证3家酒店的名称都不同
+        if len(set(hotel_names)) != 3:
             return False
 
         return True

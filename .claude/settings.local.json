@@ -64,7 +64,17 @@
       "Bash(for i in {9..12})",
       "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip cat files/search_params.json)",
       "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip ls -la files/)",
-      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm files/search_params.json)"
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm files/search_params.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip cat files/booking_history.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip ls -la files/)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip cat files/payment_orders.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm files/booking_history.json)",
+      "Bash(iconv:*)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm -rf shared_prefs/)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm files/click_history.json files/payment_orders.json files/search_params.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm -f files/booking_history.json files/click_history.json files/payment_orders.json files/search_params.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip ls files/)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip ls shared_prefs/)"
     ],
     "deny": []
   }

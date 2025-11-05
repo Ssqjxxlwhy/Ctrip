@@ -95,6 +95,6 @@ interface HotelListTabContract {
         fun searchHotels(searchParams: HotelListSearchParams): List<HotelItem>
         fun sortHotels(hotels: List<HotelItem>, sortId: String): List<HotelItem>
         fun filterHotels(hotels: List<HotelItem>, tags: List<FilterTag>): List<HotelItem>
-        fun saveHotelSelection(hotel: HotelItem)
+        fun saveHotelSelection(hotel: HotelItem, isCheapest: Boolean = false)
     }
 }

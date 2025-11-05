@@ -3,6 +3,8 @@ package com.example.Ctrip.home
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.example.Ctrip.utils.BookingHistoryManager
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,6 +12,8 @@ class FlightPaymentSuccessTabModel(private val context: Context) : FlightPayment
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("payment_success_data", Context.MODE_PRIVATE)
+    private val flightListPreferences: SharedPreferences =
+        context.getSharedPreferences("flight_list_data", Context.MODE_PRIVATE)
     private val gson = Gson()
 
     override fun getPaymentSuccessData(serviceData: ServiceSelectData): FlightPaymentSuccessData? {
@@ -85,5 +89,50 @@ class FlightPaymentSuccessTabModel(private val context: Context) : FlightPayment
         sharedPreferences.edit()
             .putString("payment_success_${System.currentTimeMillis()}", actionJson)
             .apply()
+
+        // 保存机票预订信息到booking_history.json
+        saveFlightBookingHistory()
+    }
+
+    /**
+     * 保存机票预订信息到booking_history.json
+     */
+    private fun saveFlightBookingHistory() {
+        try {
+            // 从SharedPreferences读取当前预订的航班信息
+            val bookingInfoJson = flightListPreferences.getString("current_flight_booking_info", null)
+            if (bookingInfoJson != null) {
+                val jsonObject = JSONObject(bookingInfoJson)
+
+                // 提取预订信息
+                val from = jsonObject.optString("from")
+                val to = jsonObject.optString("to")
+                val date = jsonObject.optString("date")
+                val flightIndex = jsonObject.optInt("flightIndex", -1)
+                val cabin = jsonObject.optString("cabin", "")
+                val price = jsonObject.optDouble("price", 0.0)
+
+                // 验证数据完整性
+                if (from.isNotEmpty() && to.isNotEmpty() && date.isNotEmpty() && flightIndex >= 0) {
+                    // 调用BookingHistoryManager保存预订记录
+                    BookingHistoryManager.recordFlightBooking(
+                        context = context,
+                        from = from,
+                        to = to,
+                        date = date,
+                        flightIndex = flightIndex,
+                        cabin = if (cabin.isNotEmpty()) cabin else null,
+                        price = if (price > 0) price else null
+                    )
+                    android.util.Log.d("FlightPaymentSuccess", "机票预订记录已保存: $from -> $to, $date, 航班索引=$flightIndex, 舱位=$cabin, 价格=$price")
+                } else {
+                    android.util.Log.e("FlightPaymentSuccess", "预订信息不完整: from=$from, to=$to, date=$date, flightIndex=$flightIndex")
+                }
+            } else {
+                android.util.Log.e("FlightPaymentSuccess", "未找到当前预订的航班信息")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("FlightPaymentSuccess", "保存机票预订历史失败", e)
+        }
     }
 }
