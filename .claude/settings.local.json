@@ -44,7 +44,27 @@
       "Bash(set JAVA_HOME=D:AndroidStudiojbr)",
       "Bash(\"D:\\AndroidStudio\\jbr\\bin\\java.exe\" -version)",
       "Bash(\"D:\\AndroidDevelop\\android_template\\app\\src\\main\\java\\com\\example\\Ctrip\\home\\SearchResultTabScreen.kt\")",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(nul)",
+      "Bash(set ANDROID_HOME:*)",
+      "Bash(C:UserswudelAppDataLocalAndroidSdkplatform-toolsadb.exe devices)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" devices)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" install -r app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(for i in {11..25})",
+      "Bash(do echo \"=== eval_$i.py ===\")",
+      "Bash(head:*)",
+      "Bash(done)",
+      "Bash(for i in {26..35})",
+      "Bash(for i in {8..35})",
+      "Bash(for i in {8..22})",
+      "Bash(do grep \"list_shown\" eval_$i.py)",
+      "Bash(do python -m py_compile eval_$i.py)",
+      "Bash(echo:*)",
+      "Bash(for i in 8 9 10)",
+      "Bash(for i in {9..12})",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip cat files/search_params.json)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" exec-out run-as com.example.Ctrip ls -la files/)",
+      "Bash(\"C:\\Users\\wudel\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell run-as com.example.Ctrip rm files/search_params.json)"
     ],
     "deny": []
   }

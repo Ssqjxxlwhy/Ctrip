@@ -2,6 +2,7 @@ package com.example.Ctrip.home
 
 import android.content.Context
 import android.widget.Toast
+import com.example.Ctrip.utils.SearchParamsManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -708,6 +709,15 @@ class TrainMateListTabView(private val context: Context) : TrainMateListTabContr
     // View interface implementations
     override fun showTrainList(trains: List<TrainTicket>) {
         trainList = trains
+        // 记录搜索参数并标记列表已显示
+        SearchParamsManager.recordTrainSearch(
+            context = context,
+            from = departureCity,
+            to = arrivalCity,
+            date = selectedDate.toString(),
+            ticketType = if (isStudentTicket) "学生票" else null,
+            listShown = true
+        )
     }
 
     override fun showLoading() {

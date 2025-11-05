@@ -2,6 +2,7 @@ package com.example.Ctrip.home
 
 import android.content.Context
 import android.widget.Toast
+import com.example.Ctrip.utils.SearchParamsManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,10 +32,14 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     private var isLoading by mutableStateOf(false)
     private var departureCity by mutableStateOf("")
     private var arrivalCity by mutableStateOf("")
-    
+    private var selectedDate by mutableStateOf<LocalDate?>(null)
+    private var cabinClass by mutableStateOf("")
+
     fun initialize(departureCity: String, arrivalCity: String, selectedDate: LocalDate, cabinClass: String = "economy") {
         this.departureCity = departureCity
         this.arrivalCity = arrivalCity
+        this.selectedDate = selectedDate
+        this.cabinClass = cabinClass
         val model = FlightListTabModel(context)
         presenter = FlightListTabPresenter(model)
         presenter.attachView(this)
@@ -663,6 +668,21 @@ class FlightListTabView(private val context: Context) : FlightListTabContract.Vi
     // View interface implementations
     override fun showFlightListData(data: FlightListData) {
         flightListData = data
+        // 记录搜索参数并标记列表已显示
+        // 将英文舱位转换为中文
+        val cabinChinese = when(cabinClass) {
+            "economy" -> "经济舱"
+            "business" -> "公务/头等舱"
+            else -> cabinClass
+        }
+        SearchParamsManager.recordFlightSearch(
+            context = context,
+            from = departureCity,
+            to = arrivalCity,
+            date = selectedDate?.toString(),
+            cabin = cabinChinese,
+            listShown = true
+        )
     }
     
     override fun showLoading() {

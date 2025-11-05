@@ -73,7 +73,9 @@ fun HotelBookingTabScreen(
                 checkInDate = searchParams.checkInDate,
                 checkOutDate = searchParams.checkOutDate,
                 roomCount = searchParams.roomCount,
-                guestCount = searchParams.adultCount + searchParams.childCount
+                guestCount = searchParams.adultCount + searchParams.childCount,
+                adultCount = searchParams.adultCount,
+                childCount = searchParams.childCount
             )
             onHotelListRequested(listSearchParams)
         }
@@ -120,6 +122,8 @@ fun HotelBookingTabScreen(
                         checkOutDate = data.searchParams.checkOutDate,
                         roomCount = data.searchParams.roomCount,
                         guestCount = data.searchParams.adultCount + data.searchParams.childCount,
+                        adultCount = data.searchParams.adultCount,
+                        childCount = data.searchParams.childCount,
                         searchQuery = hotelName
                     )
                     onHotelListRequested(listSearchParams)

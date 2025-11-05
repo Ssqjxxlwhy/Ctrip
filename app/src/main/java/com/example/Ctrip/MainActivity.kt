@@ -21,6 +21,7 @@ import com.example.Ctrip.message.MessageTabView
 import com.example.Ctrip.trip.TripTabScreen
 import com.example.Ctrip.my.MyTabScreen
 import com.example.Ctrip.ui.theme.CtripTheme
+import com.example.Ctrip.utils.ClickHistoryManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,19 +75,28 @@ class MainActivity : ComponentActivity() {
                             icon = { Icon(Icons.Default.Email, contentDescription = "消息") },
                             label = { Text("消息") },
                             selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 }
+                            onClick = {
+                                selectedTab = 1
+                                ClickHistoryManager.recordClick(context, "消息", "消息页面")
+                            }
                         )
                         NavigationBarItem(
                             icon = { Icon(Icons.Default.Place, contentDescription = "行程") },
                             label = { Text("行程") },
                             selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 }
+                            onClick = {
+                                selectedTab = 2
+                                ClickHistoryManager.recordClick(context, "行程", "行程页面")
+                            }
                         )
                         NavigationBarItem(
                             icon = { Icon(Icons.Default.Person, contentDescription = "我的") },
                             label = { Text("我的") },
                             selected = selectedTab == 3,
-                            onClick = { selectedTab = 3 }
+                            onClick = {
+                                selectedTab = 3
+                                ClickHistoryManager.recordClick(context, "我的", "我的页面")
+                            }
                         )
                     }
                 }

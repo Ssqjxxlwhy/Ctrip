@@ -202,7 +202,9 @@ class HotelDetailTabModelImpl(private val context: Context) : HotelDetailTabMode
             checkInDate = DateUtils.getCurrentDate(),
             checkOutDate = DateUtils.getTomorrowDate(),
             roomCount = 1,
-            guestCount = 1
+            guestCount = 1,
+            adultCount = 1,
+            childCount = 0
         )
         
         // 获取所有酒店数据
@@ -346,7 +348,9 @@ class HotelDetailTabModelImpl(private val context: Context) : HotelDetailTabMode
             checkInDate = DateUtils.getCurrentDate(),
             checkOutDate = DateUtils.getTomorrowDate(),
             roomCount = 1,
-            guestCount = 1
+            guestCount = 1,
+            adultCount = 1,
+            childCount = 0
         )
         val hotels = hotelListModel.searchHotels(searchParams)
         val hotel = hotels.find { it.id == hotelId } ?: hotels.first()

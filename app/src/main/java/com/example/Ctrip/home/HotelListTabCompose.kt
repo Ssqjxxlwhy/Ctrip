@@ -2,6 +2,7 @@ package com.example.Ctrip.home
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import com.example.Ctrip.utils.SearchParamsManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,6 +46,17 @@ fun HotelListTabScreen(
     val view = object : HotelListTabContract.View {
         override fun showHotelListData(data: HotelListData) {
             hotelListData = data
+            // 记录搜索参数并标记列表已显示
+            SearchParamsManager.recordHotelSearch(
+                context = context,
+                city = searchParams.city,
+                checkIn = searchParams.checkInDate.toString(),
+                checkOut = searchParams.checkOutDate.toString(),
+                rooms = searchParams.roomCount,
+                adults = searchParams.adultCount,
+                children = searchParams.childCount,
+                listShown = true
+            )
         }
         
         override fun showLoading() {

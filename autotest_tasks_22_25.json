@@ -1,0 +1,26 @@
+[
+  {
+    "task_num": "22",
+    "instruction": "进入 \"酒店\" 页面，为我筛选北京评分最高的前 3 家酒店的平均价",
+    "verification_method": "1. 计算真实答案：从北京酒店数据中按评分降序排序，取前5家\n2. 智能体答案：接收智能体返回的酒店列表（可以是酒店名称列表或酒店ID列表）\n3. 对比判断：将智能体答案与真实答案进行比较，前5家酒店名称必须完全一致且顺序相同\n4. 辅助检查：也可从search_params.json检查是否记录了{type:\"hotel_search\", city:\"北京\", sortBy:\"rating\", limit:5, list_shown:true}",
+    "verification_function": "check_hotel_search_beijing_top5_rating(agent_answer)"
+  },
+  {
+    "task_num": "23",
+    "instruction": "进入 “酒店” 页面，为我检索上海所有酒店中最低的价格",
+    "verification_method": "1. 计算真实答案：从上海酒店数据中按价格升序排序，取第1家（价格最低）\n2. 智能体答案：接收智能体返回的酒店（可以是酒店名称、酒店ID或包含酒店信息的字典）\n3. 对比判断：将智能体答案与真实答案进行比较，必须是价格最低的那家酒店\n4. 辅助检查：也可从search_params.json检查是否记录了{type:\"hotel_search\", city:\"上海\", sortBy:\"price_asc\", list_shown:true}",
+    "verification_function": "check_hotel_search_shanghai_cheapest(agent_answer)"
+  },
+  {
+    "task_num": "24",
+    "instruction": "进入 \"机票\" 页面，查10月21日从北京飞广州的机票，统计下最便宜的 3 趟航班的平均价格。",
+    "verification_method": "1. 计算真实答案：\n   - 根据日期计算基础价格：dayPrice = 380 - 10 = 370（10月21日是周一）\n   - 生成北京到广州的所有航班数据（2个经济舱 + 2个公务/头等舱）\n   - 按价格排序，取最便宜的3趟：370, 395, 1110\n   - 计算平均价格：(370 + 395 + 1110) / 3 = 625元\n2. 智能��答案：接收智能体返回的平均价格（可以是数字、字符串或包含平均价格的字典）\n3. 对比判断：允许±1元的误差（考虑四舍五入）\n4. 辅助检查：也可从search_params.json检查是否记录了{type:\"flight_search\", from:\"北京\", to:\"广州\", date:\"2025-10-21\", calculation:\"average_price_top3\", list_shown:true}",
+    "verification_function": "check_flight_search_price_avg(agent_answer)"
+  },
+  {
+    "task_num": "25",
+    "instruction": "进入 “火车票” 页面，查10月22日广州到杭州下午2点到5点的车次，检索这些车次中最高的价格。",
+    "verification_method": "1. 计算真实答案：\n   - 从trains_list.json加载火车票数据\n   - 筛选广州到杭州10月22日的所有车次\n   - 筛选出发时间在14:00-17:00之间的车次\n   - 真实答案：K535（14:00-19:50）\n2. 智能体答案：接收智能体返回的车次列表（可以是车次号列表或包含车次信息的字典列表）\n3. 对比判断：将智能体答案与真实答案进行比较，必须包含所有符合条件的车次\n4. 辅助检查：也可从search_params.json检查是否记录了{type:\"train_search\", from:\"广州\", to:\"杭州\", date:\"2025-10-22\", timeRange:\"14:00-17:00\", list_shown:true}",
+    "verification_function": "check_train_search_time_range(agent_answer)"
+  }
+]

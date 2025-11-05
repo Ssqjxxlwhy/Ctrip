@@ -17,6 +17,8 @@ data class HotelListSearchParams(
     val checkOutDate: LocalDate,
     val roomCount: Int,
     val guestCount: Int,
+    val adultCount: Int,
+    val childCount: Int,
     val searchQuery: String = ""
 )
 
